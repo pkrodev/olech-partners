@@ -240,21 +240,28 @@ Każda opublikowana strona linkuje do minimum: 2 usług, 1 artykułu poradnika,
 
 Klient zdecydował: **publikujemy zakresy, nie sztywne stawki.**
 
-Wyjątek: badanie wariografem ma cenę podaną wprost, bo jest znana i jest
-przewagą konkurencyjną.
+**Zmiana (2026-08-14, po rozmowie właściciela z klientem):** badanie
+wariografem **nie** ma już ceny podanej wprost. Cena jest znana (2000 zł)
+i wewnętrznie ustalona, ale świadomie nie publikujemy jej na stronie —
+CTA kieruje do kontaktu telefonicznego. To świadomy wyjątek od zasady
+„sama fraza „wyceniamy indywidualnie" nie odpowiada na pytanie i nie
+zarankuje" (niżej) — dotyczy tylko wariografu, nie pozostałych usług.
 
 ```
-Badanie wariografem            2 000 zł
+Badanie wariografem            {{LOREM: nieujawniana publicznie — CTA kontaktowe, nie liczba/zakres}}
 Obserwacja                     {{LOREM: zakres zł/h + minimum godzin}}
 Ustalenie miejsca pobytu       {{LOREM: zakres}}
 Wywiad personalny              {{LOREM: zakres}}
 Wykrywanie podsłuchów          {{LOREM: zakres}}
+Windykacja                     {{LOREM: zakres — % odzyskanej kwoty czy stawka ryczałtowa}}
 Konsultacja                    {{LOREM: bezpłatna czy płatna, ile trwa}}
 Dojazd                         {{LOREM: zasada rozliczania}}
 ```
 
 Każde FAQ „Ile kosztuje detektyw w {MIEŚCIE}?" musi zawierać liczbę albo zakres.
 Sama fraza „wyceniamy indywidualnie" nie odpowiada na pytanie i nie zarankuje.
+Wyjątek: FAQ „Ile kosztuje badanie wariografem?" — tu jawnie *nie* podajemy
+liczby (patrz wyżej), odpowiedź kieruje do kontaktu telefonicznego.
 
 ---
 
@@ -410,21 +417,55 @@ Osobna sesja na każdy punkt. Nie łącz.
 
 Do czasu otrzymania — `{{LOREM}}`.
 
+**Otrzymane 2026-08-14** (plik „o firmie.txt" od klienta) — już w użyciu na
+stronie, nie `{{LOREM}}`:
+- Podmiot: MSWiA RD-13/2026 i licencja 0004178 (wydana przez Komendanta
+  Wojewódzkiego Policji z siedzibą w Radomiu) potwierdzone jako dotyczące
+  tego podmiotu/Daniela Olecha.
+- Dane rejestrowe: KRS 0001096988, NIP 9482645495, REGON 528198884,
+  adres siedziby: Szczęsna 26, 02-454 Warszawa. **Uwaga**: to adres
+  REJESTROWY (KRS), nie adres operacyjny w Radomiu z sekcji 10 — nie
+  używać go w schema `LocalBusiness` na stronie głównej, tylko w danych
+  rejestrowych stopki/strony prawnej.
+- Wariograf: badanie prowadzi Daniel Olech, uprawnienia uzyskane w Rosji,
+  bieżące doszkalanie przez Polskie Stowarzyszenie Poligraferów oraz
+  American Polygraph Association, sprzęt certyfikowany („uznawany przez
+  międzynarodowe środowiska", bez konkretnego modelu), badanie 2–4 h
+  zależnie od złożoności i celu, umawianie telefoniczne.
+- Stowarzyszenia: członek Polskiego Stowarzyszenia Poligraferów oraz
+  białoruskiego „Общественное объединение «Полиграфолог»" (Stowarzyszenie
+  Poligrafolog).
+- Fundacja: nazwa „Nowy Start", profil — przeciwdziałanie alienacji
+  rodzicielskiej.
+- Media: potwierdzony gość programu „Pytania na śniadanie" jako ekspert ds.
+  detekcji kłamstwa (bez dokładnej daty/tytułu odcinka — patrz niżej).
+- Zakres geograficzny: klient chce podkreślać też obsługę całej UE i
+  krajów wschodnich, nie tylko Polski (do uwzględnienia w treściach o
+  zasięgu działania, nie zmienia bazy operacyjnej z Radomia, sekcja 1).
+- **Odrzucone jako sprzeczne z sekcją 2.1** (nie wdrożone): klient
+  zaproponował „wygenerowanie jakichś historii z czapy" na case studies
+  i „zerżnięcie" pytań FAQ wprost z konkurencji. Fabrykacji doświadczenia
+  nie robimy — case studies nadal `{{LOREM}}`. Pytania FAQ: wolno użyć
+  konkurencji jako listy *tematów*, odpowiedzi piszemy własne (sekcja 2.1
+  już to dopuszczała).
+
+Nadal brakuje:
+
 | Obszar | Czego brakuje |
 |---|---|
-| Podmiot | Na kogo wpis RD-13/2026 i licencja 0004178 |
+| Podmiot | Dokładna pełna nazwa prawna (mamy KRS/NIP/REGON, nie mamy nazwy z odpisu) |
 | Współpracownicy | Tabela: miasto → osoba → nr licencji → forma umowy |
-| Polisa OC | Numer, ubezpieczyciel, suma |
-| Lokal w Radomiu | Czy da się sformalizować pod wizytówkę GBP |
-| Cennik | Zakresy dla wszystkich usług poza wariografem |
-| Wariograf | Model sprzętu, miejsce badania, forma uprawnień |
-| Case studies | 8–12 realnych spraw do anonimizacji |
+| Polisa OC | Numer, ubezpieczyciel, suma (klient: „doślę, teraz nie mam przy sobie") |
+| Lokal w Radomiu | Adres pod wizytówkę GBP — klient: „musimy obgadać temat" |
+| Cennik | Zakresy dla wszystkich usług, **łącznie z wariografem** (sekcja 9 — decyzja 2026-08-14: cena wariografu też nieujawniana) |
+| Wariograf | Konkretny model i producent sprzętu, dokładne miejsce badania |
+| Case studies | 8–12 realnych spraw do anonimizacji — **nie fabrykować** (patrz wyżej) |
 | Opinie | Dostęp do GBP, proces zbierania |
 | DNA | Laboratorium partnerskie i akredytacja |
-| Mediacje | Wpis na listę stałych mediatorów — tak/nie |
-| Media | Data i tytuł odcinka „Pytania na śniadanie" |
-| Fundacja | Nazwa, KRS, forma powiązania z firmą |
-| Zdjęcia | Daniel Olech, sprzęt, miejsce badania |
+| Mediacje | Wpis na listę stałych mediatorów — tak/nie (do czasu potwierdzenia: „mediacje i negocjacje", nie „mediacje sądowe", sekcja 2.3) |
+| Media | Dokładna data i tytuł odcinka „Pytania na śniadanie" (program już potwierdzony) |
+| Fundacja | KRS fundacji „Nowy Start", forma powiązania z firmą |
+| Zdjęcia | Daniel Olech, sprzęt, miejsce badania (do czasu realnych — stockowe, za zgodą klienta) |
 | Dostępy | Rejestrator domeny, hosting, GBP, GSC |
 
 ---

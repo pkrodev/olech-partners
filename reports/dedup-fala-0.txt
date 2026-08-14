@@ -1,6 +1,6 @@
 Bramka antyduplikatowa — fala 0
 Próg twardy: 65% | próg ostrzegawczy: 50% | shingle n=5
-Sprawdzonych nowych plików: 5 | porównań: 10
+Sprawdzonych nowych plików: 6 | porównań: 15
 
 Brak kolizji twardych.
 

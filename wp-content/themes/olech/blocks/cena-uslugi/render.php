@@ -1,7 +1,12 @@
 <?php
 /**
- * Zakres cenowy usługi. Cena stała (np. wariograf) — wpisz tę samą wartość
- * w cena_od i cena_do (patrz instrukcja pola w inc/acf-pola.php).
+ * Zakres cenowy usługi. Cena stała — wpisz tę samą wartość w cena_od i
+ * cena_do (patrz instrukcja pola w inc/acf-pola.php).
+ *
+ * jednostka_ceny = "ukryta" to inny przypadek niż puste cena_od/cena_do:
+ * cena JEST znana wewnętrznie, ale świadomie nie publikujemy jej (sekcja 9
+ * CLAUDE.md, decyzja 2026-08-14 dot. wariografu) — pokazujemy CTA
+ * kontaktowe, nie {{LOREM}}, bo to nie brakujące dane klienta.
  */
 
 return function () {
@@ -13,6 +18,10 @@ return function () {
 	$od        = get_field( 'cena_od', $post_id );
 	$do        = get_field( 'cena_do', $post_id );
 	$jednostka = get_field( 'jednostka_ceny', $post_id );
+
+	if ( 'ukryta' === $jednostka ) {
+		return '<p class="olech-cena-uslugi olech-cena-uslugi--ukryta"><strong>Cena:</strong> ustalana indywidualnie podczas kontaktu — <a href="#formularz">zostaw zgłoszenie</a> albo zadzwoń.</p>';
+	}
 
 	$etykiety        = array( 'zl' => 'zł', 'zl_h' => 'zł/h', 'zakres' => 'zł' );
 	$jednostka_tekst = $etykiety[ $jednostka ] ?? 'zł';

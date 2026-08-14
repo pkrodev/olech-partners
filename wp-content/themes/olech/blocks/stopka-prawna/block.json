@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "olech/stopka-prawna",
+	"title": "Stopka — dane prawne",
+	"category": "widgets",
+	"icon": "info-outline",
+	"description": "Nazwa podmiotu, MSWiA, licencja, KRS/NIP/REGON — checklist pkt 23 CLAUDE.md.",
+	"textdomain": "olech"
+}

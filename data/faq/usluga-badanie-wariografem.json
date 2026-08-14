@@ -1,7 +1,11 @@
 [
   {
     "pytanie": "Ile kosztuje badanie wariografem?",
-    "odpowiedz": "Badanie wariografem kosztuje 2000 zł. Cena obejmuje konsultację wstępną, przygotowanie pytań, samo badanie oraz pisemny raport z wynikiem."
+    "odpowiedz": "Koszt ustalamy indywidualnie podczas rozmowy telefonicznej, dopasowany do zakresu konkretnej sprawy. Cena obejmuje konsultację wstępną, przygotowanie pytań, samo badanie oraz pisemny raport z wynikiem."
+  },
+  {
+    "pytanie": "Kto prowadzi badanie i jakie ma kwalifikacje?",
+    "odpowiedz": "Badanie prowadzi Daniel Olech — uprawnienia do wykonywania badań wariograficznych uzyskał w Rosji, a wiedzę rozszerza na bieżąco poprzez cykliczne szkolenia Polskiego Stowarzyszenia Poligraferów oraz American Polygraph Association."
   },
   {
     "pytanie": "Czy wynik badania wariografem jest dowodem w sądzie?",
@@ -13,11 +17,11 @@
   },
   {
     "pytanie": "Ile trwa badanie i kiedy otrzymam wynik?",
-    "odpowiedz": "Samo badanie trwa zwykle kilka godzin (rozmowa wstępna, kalibracja, badanie właściwe, rozmowa poegzaminacyjna). Cały proces od pierwszego kontaktu do przekazania raportu zajmuje zwykle od kilku do kilkunastu dni, w zależności od terminu badania i złożoności pytań."
+    "odpowiedz": "Samo badanie trwa od 2 do 4 godzin, w zależności od złożoności sprawy i celu badania (rozmowa wstępna, kalibracja, badanie właściwe, rozmowa poegzaminacyjna). Cały proces od pierwszego kontaktu do przekazania raportu zajmuje zwykle od kilku do kilkunastu dni."
   },
   {
-    "pytanie": "Gdzie odbywa się badanie?",
-    "odpowiedz": "{{LOREM: standardowe miejsce przeprowadzania badania}}."
+    "pytanie": "Jak umówić się na badanie?",
+    "odpowiedz": "Badanie umawiamy telefonicznie — podczas rozmowy ustalamy termin, zakres pytań i koszt dopasowany do sprawy."
   },
   {
     "pytanie": "Czy mogę zlecić badanie wariografem poza Radomiem?",

@@ -21,6 +21,10 @@ function olech_ustawienia_firmy_pola() {
 		'whatsapp'        => 'WhatsApp',
 		'email'           => 'E-mail',
 		'adres_radom'     => 'Adres (wyłącznie Radom — jedyny dozwolony w LocalBusiness, sekcja 10)',
+		'krs'             => 'KRS (dane rejestrowe — stopka/strona prawna, NIE LocalBusiness)',
+		'nip'             => 'NIP',
+		'regon'           => 'REGON',
+		'adres_siedziby'  => 'Adres siedziby wg KRS (może być inny niż Radom — sekcja 17)',
 	);
 }
 

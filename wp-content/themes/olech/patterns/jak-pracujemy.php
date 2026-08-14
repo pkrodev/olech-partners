@@ -16,7 +16,7 @@
 <!-- wp:list {"ordered":true} -->
 <ol class="wp-block-list">
 <!-- wp:list-item -->
-<li>Bezpłatna konsultacja telefoniczna lub mailowa.</li>
+<li>Konsultacja telefoniczna, mailowa lub spotkanie — osobiste albo online, wg potrzeby klienta.</li>
 <!-- /wp:list-item -->
 <!-- wp:list-item -->
 <li>Ustalenie zakresu i celu sprawy.</li>

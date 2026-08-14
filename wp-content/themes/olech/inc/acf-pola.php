@@ -143,11 +143,13 @@ function olech_register_acf_usluga() {
 				'label'   => 'Jednostka ceny',
 				'name'    => 'jednostka_ceny',
 				'type'    => 'select',
-				'choices' => array(
+				'choices'      => array(
 					'zl'     => 'zł',
 					'zl_h'   => 'zł/h',
 					'zakres' => 'zakres',
+					'ukryta' => 'ukryta (cena znana, celowo nie publikujemy)',
 				),
+				'instructions' => '„ukryta" = cena jest znana wewnętrznie, ale świadomie nie pokazujemy jej publicznie (sekcja 9 CLAUDE.md) — inne niż puste pola, które znaczą „jeszcze nie znamy ceny".',
 			),
 			array(
 				'key'       => 'field_olech_uslugi_powiazane',

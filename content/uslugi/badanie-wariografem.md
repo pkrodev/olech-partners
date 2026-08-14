@@ -12,7 +12,7 @@ Zgłaszają się do nas osoby, które nie chcą już zgadywać. Chcą mieć w r�
 
 ## Jak działamy
 
-Badanie prowadzi licencjonowany detektyw {{LOREM: numer licencji prowadzącego badania}}, przeszkolony w technice poligraficznej, z użyciem {{LOREM: model i producent wariografu}}. Cały proces opiera się na trzech zasadach, których nie negocjujemy: dobrowolności, poufności i precyzji pytań.
+Badanie prowadzi Daniel Olech, ekspert z zakresu badań wariograficznych — uprawnienia do wykonywania badań uzyskał w Rosji, a wiedzę rozszerza na bieżąco, uczestnicząc w cyklicznych szkoleniach organizowanych przez Polskie Stowarzyszenie Poligraferów oraz American Polygraph Association. Badania prowadzone są na certyfikowanym sprzęcie, uznawanym przez międzynarodowe środowisko poligraferów ({{LOREM: model i producent wariografu}}). Cały proces opiera się na trzech zasadach, których nie negocjujemy: dobrowolności, poufności i precyzji pytań.
 
 **Dobrowolność.** Osoba badana musi wyrazić świadomą zgodę na udział w badaniu. Nie przeprowadzamy badań pod przymusem ani bez wiedzy osoby badanej — to nie tylko standard etyczny, ale i warunek, bez którego wynik badania traci sens: wariograf rejestruje reakcje fizjologiczne, a te są miarodajne wyłącznie wtedy, gdy osoba badana świadomie uczestniczy w procesie i rozumie, na czym on polega.
 
@@ -28,11 +28,11 @@ Warto też jasno powiedzieć, czego badanie nie robi. Wariograf nie „czyta w m
 2. **Ustalenie zakresu i pytań kluczowych.** Wspólnie formułujemy pytania, które mają zostać zweryfikowane. To etap, który realnie decyduje o wartości badania — im bardziej konkretne pytania, tym bardziej użyteczny wynik.
 3. **Uzyskanie zgody osoby badanej.** Bez tego badanie się nie odbywa. Jeśli osoba badana odmawia udziału, informujemy o tym zlecającego i wspólnie ustalamy dalsze kroki.
 4. **Termin i miejsce badania.** Ustalamy dogodny termin; badanie odbywa się w warunkach zapewniających spokój i brak zakłóceń — {{LOREM: standardowe miejsce przeprowadzania badania}}.
-5. **Przebieg badania.** Rozmowa wstępna wyjaśniająca procedurę, kalibracja aparatury, właściwe badanie z rejestracją reakcji fizjologicznych w odpowiedzi na przygotowane pytania, rozmowa poegzaminacyjna.
+5. **Przebieg badania.** Rozmowa wstępna wyjaśniająca procedurę, kalibracja aparatury, właściwe badanie z rejestracją reakcji fizjologicznych w odpowiedzi na przygotowane pytania, rozmowa poegzaminacyjna. Całość, w zależności od złożoności sprawy i celu badania, trwa od 2 do 4 godzin.
 6. **Analiza wyników.** Zarejestrowane dane są analizowane przez osobę prowadzącą badanie, zgodnie z przyjętą metodyką oceny wykresów poligraficznych.
 7. **Przekazanie wyniku i konsultacja końcowa.** Omawiamy wynik, jego ograniczenia i możliwe dalsze kroki — w tym, jeśli sprawa tego wymaga, sugerujemy kontakt z kancelarią prawną współpracującą z naszą firmą.
 
-Cena badania wynosi 2000 zł — to jedna z niewielu pozycji w naszym cenniku podana wprost, bo jest znana z góry i niezależna od czasu trwania sprawy. Cena obejmuje konsultację wstępną, przygotowanie pytań, przeprowadzenie badania oraz pisemny raport z wynikiem.
+Badanie umawiamy telefonicznie — podczas rozmowy ustalamy zarówno termin, jak i koszt, dopasowany do zakresu konkretnej sprawy. Cena obejmuje konsultację wstępną, przygotowanie pytań, przeprowadzenie badania oraz pisemny raport z wynikiem.
 
 Od pierwszego kontaktu do przekazania raportu upływa zwykle kilka do kilkunastu dni — czas ten w największym stopniu zależy od tego, jak szybko uda się ustalić dogodny termin dla obu stron oraz od złożoności pytań, które wymagają przygotowania. Jeżeli sprawa jest pilna (np. zbliżający się termin decyzji kadrowej), prosimy o zaznaczenie tego już podczas pierwszego kontaktu — staramy się wtedy skrócić czas oczekiwania na termin badania, o ile pozwala na to kalendarz.
 

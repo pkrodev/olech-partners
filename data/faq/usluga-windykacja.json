@@ -1,0 +1,26 @@
+[
+  {
+    "pytanie": "Ile kosztuje windykacja detektywistyczna?",
+    "odpowiedz": "Zależy od zakresu działań — {{LOREM: zakres — % odzyskanej kwoty czy stawka ryczałtowa}}. Model rozliczenia ustalamy jasno przed rozpoczęciem prac."
+  },
+  {
+    "pytanie": "Czy zajmujecie się egzekucją komorniczą?",
+    "odpowiedz": "Nie — egzekucję prowadzi wyłącznie komornik sądowy na podstawie tytułu wykonawczego. Ustalamy fakty (adres, majątek dłużnika) i prowadzimy negocjacje polubowne, które mogą sprawę rozwiązać bez sądu albo skutecznie ją do niego przygotować."
+  },
+  {
+    "pytanie": "Co jeśli nie znam aktualnego adresu dłużnika?",
+    "odpowiedz": "To częsty punkt startowy — ustalenie miejsca pobytu dłużnika jest pierwszym krokiem windykacji, tymi samymi metodami co w samodzielnej usłudze ustalenia miejsca pobytu."
+  },
+  {
+    "pytanie": "Czy sprawdzicie, czy dłużnik w ogóle ma z czego zapłacić?",
+    "odpowiedz": "Tak — weryfikacja sytuacji majątkowej dłużnika (praca, nieruchomości, działalność gospodarcza) to jeden z głównych elementów usługi, pozwalający ocenić, czy dalsze dochodzenie roszczenia ma sens ekonomiczny."
+  },
+  {
+    "pytanie": "Czy gwarantujecie odzyskanie długu?",
+    "odpowiedz": "Nie — wynik zależy od czynników, na które nie mamy wpływu, m.in. rzeczywistej wypłacalności dłużnika. Gwarantujemy rzetelne ustalenie faktów i profesjonalnie prowadzone negocjacje."
+  },
+  {
+    "pytanie": "Czy prowadzicie windykację poza Radomiem?",
+    "odpowiedz": "Tak, dzięki sieci licencjonowanych współpracowników prowadzimy sprawy windykacyjne w całej Polsce."
+  }
+]

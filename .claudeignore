@@ -1,0 +1,11 @@
+wp-admin/
+wp-includes/
+wp-content/plugins/
+wp-content/uploads/
+wp-content/upgrade/
+node_modules/
+vendor/
+*.min.js
+*.min.css
+*.sql
+*.pot

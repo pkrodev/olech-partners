@@ -1,0 +1,17 @@
+wp-admin/
+wp-includes/
+wp-*.php
+xmlrpc.php
+index.php
+license.txt
+readme.html
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/cache/
+wp-content/plugins/
+wp-content/themes/*
+!wp-content/themes/olech/
+.ddev/
+*.sql
+*.log
+.env

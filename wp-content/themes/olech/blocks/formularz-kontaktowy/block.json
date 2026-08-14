@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "olech/formularz-kontaktowy",
+	"title": "Formularz kontaktowy",
+	"category": "widgets",
+	"icon": "email",
+	"description": "Natywny formularz (bez pluginu) — nonce, honeypot, wp_mail, info o tajemnicy zawodowej (checklist pkt 21).",
+	"textdomain": "olech"
+}

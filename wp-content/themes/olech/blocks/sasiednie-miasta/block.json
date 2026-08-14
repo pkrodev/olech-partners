@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "olech/sasiednie-miasta",
+	"title": "Sąsiednie miasta",
+	"category": "widgets",
+	"icon": "admin-site-alt3",
+	"description": "4-6 linków do lokalizacji z tego samego powiatu, z dopełnieniem z województwa (sekcja 8.1 pkt 12).",
+	"textdomain": "olech"
+}

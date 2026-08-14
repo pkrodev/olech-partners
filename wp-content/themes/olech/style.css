@@ -3,3 +3,119 @@ Theme Name: Olech & Partners
 Version: 0.1.0
 Requires PHP: 8.1
 */
+
+/*
+ * Minimalny CSS layoutowy — bez systemu kolorów/typografii (czeka na
+ * branding klienta, punkt 1 z sekcji 16 CLAUDE.md). Wyłącznie układ,
+ * żeby własne bloki z punktu 3 były czytelne do testowania.
+ */
+
+.olech-sekcja {
+	margin-block: 2rem;
+}
+
+.olech-hero .olech-hero__lead {
+	max-width: 60ch;
+}
+
+.olech-cta-row {
+	display: flex;
+	gap: 1rem;
+	flex-wrap: wrap;
+	margin-block-start: 1rem;
+}
+
+.olech-btn {
+	display: inline-block;
+	padding: 0.75em 1.5em;
+	border: 1px solid currentColor;
+	border-radius: 0.25em;
+	text-decoration: none;
+}
+
+.olech-trust-bar {
+	display: flex;
+	gap: 1.5rem;
+	flex-wrap: wrap;
+	font-size: 0.9em;
+	padding-block: 0.5rem;
+	border-block: 1px solid #ddd;
+}
+
+.olech-uslugi__siatka {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 1rem;
+}
+
+.olech-usluga-karta {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 1rem;
+	border: 1px solid #ddd;
+	border-radius: 0.25em;
+	text-decoration: none;
+	color: inherit;
+}
+
+.olech-gminy__lista {
+	columns: 2;
+	gap: 2rem;
+}
+
+.olech-faq__pozycja {
+	border-block-end: 1px solid #ddd;
+	padding-block: 0.75rem;
+}
+
+.olech-faq__pozycja summary {
+	cursor: pointer;
+	font-weight: 600;
+}
+
+.olech-formularz__form {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	max-width: 40rem;
+}
+
+.olech-formularz__honeypot {
+	position: absolute;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}
+
+.olech-mapa__przycisk {
+	padding: 0.75em 1.5em;
+	border: 1px solid currentColor;
+	border-radius: 0.25em;
+	background: none;
+	cursor: pointer;
+}
+
+.olech-cta-sticky {
+	display: none;
+}
+
+@media (max-width: 782px) {
+	.olech-cta-sticky {
+		display: flex;
+		position: fixed;
+		inset-block-end: 0;
+		inset-inline: 0;
+		z-index: 100;
+		background: #fff;
+		border-block-start: 1px solid #ddd;
+	}
+
+	.olech-cta-sticky a {
+		flex: 1;
+		text-align: center;
+		padding: 1em;
+		text-decoration: none;
+	}
+}

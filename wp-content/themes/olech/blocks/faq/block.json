@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "olech/faq",
+	"title": "FAQ",
+	"category": "widgets",
+	"icon": "editor-help",
+	"description": "FAQ ładowane z data/faq/*.json wg typu strony (usluga/lokalizacja), z JSON-LD FAQPage (sekcja 4, 10).",
+	"textdomain": "olech"
+}

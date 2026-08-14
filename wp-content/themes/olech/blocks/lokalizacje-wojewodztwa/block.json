@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "olech/lokalizacje-wojewodztwa",
+	"title": "Lokalizacje w województwie",
+	"category": "widgets",
+	"icon": "admin-multisite",
+	"description": "Lista miast (CPT lokalizacja) przypisanych do aktualnie przeglądanego terminu taksonomii wojewodztwo — hub wojewódzki.",
+	"textdomain": "olech"
+}

@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "olech/cta-sticky",
+	"title": "Sticky CTA (mobile)",
+	"category": "widgets",
+	"icon": "phone",
+	"description": "Sticky pasek mobilny telefon + WhatsApp (checklist pkt 9).",
+	"textdomain": "olech"
+}

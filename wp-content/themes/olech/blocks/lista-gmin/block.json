@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "olech/lista-gmin",
+	"title": "Lista obsługiwanych gmin",
+	"category": "widgets",
+	"icon": "list-view",
+	"description": "Renderuje pole ACF unikalne_gminy (jedna gmina na linię) jako listę (sekcja 8.1 pkt 7).",
+	"textdomain": "olech"
+}

@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "olech/dane-sadowe",
+	"title": "Zakres obsługi i sądy właściwe",
+	"category": "widgets",
+	"icon": "location",
+	"description": "Model pracy (sekcja 6.3) + sądy okręgowy/rejonowy z ACF (sekcja 8.1 pkt 3 i 5).",
+	"textdomain": "olech"
+}

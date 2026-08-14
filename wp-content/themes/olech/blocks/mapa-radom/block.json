@@ -1,0 +1,10 @@
+{
+	"apiVersion": 3,
+	"name": "olech/mapa-radom",
+	"title": "Mapa (Radom)",
+	"category": "widgets",
+	"icon": "location",
+	"description": "Mapa Google ładowana dopiero po kliknięciu — facade, tylko Radom (sekcja 14, checklist pkt 14).",
+	"textdomain": "olech",
+	"viewScript": "file:./view.js"
+}

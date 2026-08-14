@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "olech/uslugi-karty",
+	"title": "Karty usług",
+	"category": "widgets",
+	"icon": "portfolio",
+	"description": "Siatka kart wszystkich opublikowanych usług, linki do /uslugi/{usluga}/ (sekcja 8.1 pkt 4, hub /uslugi/).",
+	"textdomain": "olech"
+}

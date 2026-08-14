@@ -1,0 +1,13 @@
+{
+	"apiVersion": 3,
+	"name": "olech/powiazane",
+	"title": "Powiązane wpisy (pole relacyjne ACF)",
+	"category": "widgets",
+	"icon": "admin-links",
+	"description": "Generyczny renderer pola relationship ACF — usługi powiązane / poradniki powiązane (sekcja 8.2).",
+	"textdomain": "olech",
+	"attributes": {
+		"pole": { "type": "string", "default": "" },
+		"etykieta": { "type": "string", "default": "Powiązane" }
+	}
+}

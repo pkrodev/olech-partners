@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "olech/cena-uslugi",
+	"title": "Cena usługi",
+	"category": "widgets",
+	"icon": "money-alt",
+	"description": "Zakres cenowy usługi z pól ACF cena_od/cena_do/jednostka_ceny — publikujemy zakresy, nie sztywne stawki (sekcja 9).",
+	"textdomain": "olech"
+}

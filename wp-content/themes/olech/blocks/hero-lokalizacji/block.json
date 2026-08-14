@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "olech/hero-lokalizacji",
+	"title": "Hero lokalizacji",
+	"category": "widgets",
+	"icon": "location-alt",
+	"description": "H1 + lead + CTA dla strony miasta (sekcja 8.1 pkt 1).",
+	"textdomain": "olech"
+}

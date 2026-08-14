@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "olech/pasek-zaufania",
+	"title": "Pasek zaufania",
+	"category": "widgets",
+	"icon": "shield",
+	"description": "Licencja, wpis MSWiA, tajemnica zawodowa (sekcja 8.1 pkt 2, checklist pkt 23).",
+	"textdomain": "olech"
+}

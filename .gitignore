@@ -1,6 +1,6 @@
 wp-admin/
 wp-includes/
-wp-*.php
+/wp-*.php
 /xmlrpc.php
 /index.php
 /license.txt
@@ -16,3 +16,4 @@ wp-content/themes/*
 *.log
 .env
 wp-content/languages/
+wp-content/index.php

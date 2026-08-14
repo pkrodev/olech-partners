@@ -11,12 +11,11 @@ nadrzędna to zawsze `CLAUDE.md`.
 - Admin WP: `https://olech.ddev.site/wp-admin/` — login `admin` / hasło `admin123`
   (tylko lokalne DDEV, do zmiany).
 - WP-CLI dostępny przez `ddev wp ...` (lokalnie w tej sesji: `ddev exec wp ...`).
-- **Git: praca z punktu 4 (patrz niżej) nie jest jeszcze scommitowana.**
-  Nowe/zmienione ścieżki: `wp-cli.yml`, `data/uslugi.csv`, `scripts/import-uslugi.php`,
-  `content/uslugi/*.md` (5 plików), `data/faq/usluga-*.json` (5 plików).
-  Zacommitować świadomie przy starcie kolejnej sesji (użytkownik commituje
-  tylko na wyraźną prośbę — patrz zasady pracy). Punkty 1–3 są już
-  scommitowane w `ccef682`.
+- **Git: praca z punktu 5 (patrz niżej) nie jest jeszcze scommitowana.**
+  Nowe/zmienione ścieżki: `data/miasta.csv` (same nagłówki), `scripts/validate-miasta.py`,
+  `.gitignore` (dodane `__pycache__/`, `*.pyc`). Zacommitować świadomie przy
+  starcie kolejnej sesji (użytkownik commituje tylko na wyraźną prośbę —
+  patrz zasady pracy). Punkty 1–4 są już scommitowane (`ccef682`, `a585196`).
 
 ## Zrobione — punkty 1–3 z sekcji 16 CLAUDE.md
 
@@ -149,6 +148,43 @@ Pełna głębia, wszystkie 6 szablonów z sekcji 16 na raz (decyzja użytkownika
   w kolejności `menu_order`, relacje `uslugi_powiazane` zapisane poprawnie
   (drugi przebieg importera, po tym jak wszystkie posty już istnieją).
 
+## Zrobione — punkt 5 z sekcji 16 CLAUDE.md
+
+`data/miasta.csv` — struktura i walidator (dane wypełniane etapami) ✅
+
+- **`data/miasta.csv`** — wyłącznie nagłówek (15 kolumn dokładnie wg
+  sekcji 6.2 CLAUDE.md), zero wierszy danych. Świadoma decyzja z
+  użytkownikiem: dane realne (TERYT/GUS, BIP sądów) dla miast fali 1 to
+  osobny etap/sesja — sekcja 6.2 zabrania zgadywania („Nie zgaduj — jeśli
+  nie ma danych, wiersz czeka”), a research per miasto to odrębny nakład
+  pracy wymagający weryfikacji źródeł.
+- **`scripts/validate-miasta.py`** — samodzielny skrypt Python (bez
+  zależności od WP, spójny z konwencją `dedup-gate.py`/`indexation-report.py`
+  z sekcji 4), do uruchamiania przed każdym importem (analogicznie do
+  `dedup-gate.py`, sekcja 11). Sprawdza: nagłówek (brakujące/nieoczekiwane
+  kolumny), unikalność i format sluga, wymagane pola tekstowe, `wojewodztwo`
+  względem listy 16 slugów z `olech_rewrite_wojewodztwo()`
+  (`inc/post-types.php`) — żeby literówka nie psuła huba wojewódzkiego,
+  `ludnosc`/`fala`/`tier` jako liczby w poprawnych zakresach, komplet pól
+  `unikalne_*`, min. 3 gminy w `unikalne_gminy` (separator `|`, ta sama
+  konwencja co `uslugi_powiazane` w `data/uslugi.csv`), oraz opcjonalnie
+  referencje `wspolpracownik_id` → `data/wspolpracownicy.csv` (jeśli ten
+  plik już istnieje — na razie nie istnieje, więc tylko ostrzeżenie, nie błąd).
+  Exit code 0/1, błędy na stderr — nadaje się jako bramka w CI/przed importem.
+- **Zamysłowa decyzja udokumentowana w kodzie**: sekcja 6.2 CLAUDE.md mówi
+  ogólnie „wiersz bez kompletu pól unikalne_* nie przechodzi importu”, ale
+  sekcja 7 wprost dopuszcza tier 3 z „minimum 3 dane unikalne”. Walidator
+  wymaga wszystkich 5 pól `unikalne_*` dla tier 1/2, a dla tier 3 — minimum
+  3 z 5. To synteza obu fragmentów, nie dosłowny cytat żadnego — jeśli
+  odczytanie jest błędne, do poprawienia (patrz docstring modułu).
+- Zweryfikowany na testowych danych (nie w repo): łapie literówkę w
+  województwie, niekompletne `unikalne_*` wg reguły tier, duplikat sluga,
+  brak sluga, złą liczbę gmin, zły zakres `tier`/`fala`, zły/nieznany
+  nagłówek, brakujące i nieistniejące `wspolpracownik_id`. Pojedynczy
+  poprawny wiersz i plik z samym nagłówkiem przechodzą czysto (exit 0).
+- `.gitignore` — dodano `__pycache__/` i `*.pyc` (nie było wpisu, artefakty
+  Pythona pojawiły się dopiero przy pisaniu tego skryptu).
+
 ## Świadomie NIE zrobione / odłożone
 
 - **ACF Pro** — brak licencji klienta. Gdy dojdzie: zamiana pól textarea
@@ -169,10 +205,16 @@ Pełna głębia, wszystkie 6 szablonów z sekcji 16 na raz (decyzja użytkownika
   z sekcji 9 mają tam trafić jako wiersze, nie osobne CPT `usluga`.
 - **`poradniki_powiazane`** na wszystkich 5 usługach — puste, bo CPT/wpisy
   poradnika jeszcze nie istnieją (nie fabrykowaliśmy powiązań).
+- **Dane w `data/miasta.csv`** — plik ma tylko nagłówek, zero miast (patrz
+  punkt 5 wyżej). Wypełnianie realnymi danymi (TERYT/GUS, BIP sądów) to
+  osobny etap, per fala z sekcji 12, zaczynając od fali 1 (Pionki, Kozienice,
+  Zwoleń, Białobrzegi, Szydłowiec, Przysucha, Iłża, Skaryszew, Warka, Lipsko).
+- **`data/wspolpracownicy.csv`** — nie istnieje, czeka na dane klienta
+  (sekcja 17). Walidator `validate-miasta.py` obsługuje ten brak (ostrzega,
+  nie blokuje).
 
 ## Następne kroki wg kolejności z sekcji 16 CLAUDE.md
 
-5. `data/miasta.csv` — struktura i walidator
 6. Importer WP-CLI (idempotentny) — `scripts/import-locations.php`,
    wzorzec `require:` w `wp-cli.yml` już ustalony w punkcie 4
 7. `dedup-gate.py`

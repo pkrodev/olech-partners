@@ -11,11 +11,10 @@ nadrzędna to zawsze `CLAUDE.md`.
 - Admin WP: `https://olech.ddev.site/wp-admin/` — login `admin` / hasło `admin123`
   (tylko lokalne DDEV, do zmiany).
 - WP-CLI dostępny przez `ddev wp ...` (lokalnie w tej sesji: `ddev exec wp ...`).
-- **Git: praca z punktu 5 (patrz niżej) nie jest jeszcze scommitowana.**
-  Nowe/zmienione ścieżki: `data/miasta.csv` (same nagłówki), `scripts/validate-miasta.py`,
-  `.gitignore` (dodane `__pycache__/`, `*.pyc`). Zacommitować świadomie przy
-  starcie kolejnej sesji (użytkownik commituje tylko na wyraźną prośbę —
-  patrz zasady pracy). Punkty 1–4 są już scommitowane (`ccef682`, `a585196`).
+- **Git: praca z punktu 6 (patrz niżej) nie jest jeszcze scommitowana.**
+  Nowe/zmienione ścieżki: `scripts/import-locations.php`, `wp-cli.yml`
+  (dopisany require). Punkty 1–5 są już scommitowane (`ccef682`, `a585196`,
+  `f907a77`).
 
 ## Zrobione — punkty 1–3 z sekcji 16 CLAUDE.md
 
@@ -185,6 +184,45 @@ Pełna głębia, wszystkie 6 szablonów z sekcji 16 na raz (decyzja użytkownika
 - `.gitignore` — dodano `__pycache__/` i `*.pyc` (nie było wpisu, artefakty
   Pythona pojawiły się dopiero przy pisaniu tego skryptu).
 
+## Zrobione — punkt 6 z sekcji 16 CLAUDE.md
+
+Importer WP-CLI, idempotentny ✅
+
+- **`scripts/import-locations.php`** — komenda `wp olech import-locations`
+  (`--dry-run`, `--csv=`, `--validator=`, `--skip-validate`, `--only=`,
+  `--fala=`, `--publish`, `--user=`), zarejestrowana przez `wp-cli.yml`
+  (drugi wpis obok `import-uslugi.php`). Przed importem automatycznie
+  uruchamia `scripts/validate-miasta.py` (shell_exec) i przerywa import,
+  jeśli walidacja nie przejdzie — nie trzeba pamiętać o ręcznym uruchomieniu
+  bramki osobno, choć da się to pominąć świadomie przez `--skip-validate`.
+- **Ważna decyzja projektowa: draft domyślnie, nie publish.** W
+  przeciwieństwie do `import-uslugi.php` (usługi = fala 0, publikacja od
+  razu), lokalizacje podlegają ścisłej kontroli falami z twardymi progami
+  STOP (sekcja 12.1 CLAUDE.md — „nie kontynuuj automatycznie”). Import bez
+  `--publish` zapisuje jako `draft`; `--publish` jawnie przełącza na
+  `publish`. Re-import bez `--publish` **nie cofa** już opublikowanej
+  strony do draftu (status nadpisywany tylko przy tworzeniu nowego posta
+  albo gdy `--publish` podano jawnie) — odwracalny, bezpieczny domyślny
+  wybór.
+- Mapowanie CSV → ACF identyczne z nazwami pól w `inc/acf-pola.php`
+  (zgodnie z komentarzem w tym pliku o mapowaniu 1:1). `unikalne_gminy`
+  konwertowane z konwencji CSV (`|`-separated) na format oczekiwany przez
+  pole ACF textarea (jedna gmina na linię). Taksonomie `wojewodztwo`
+  (slug wymuszony zgodnie z listą w `olech_rewrite_wojewodztwo()`) i
+  `powiat` tworzone on-demand, tak jak `kategoria_uslugi` w punkcie 4.
+- Zweryfikowane end-to-end na syntetycznym, testowym wierszu (nie w repo,
+  posprzątane po teście — usunięty testowy post, taksonomie
+  „Mazowieckie”/„radomski” zostawione, bo to realne, wielokrotnego użytku
+  wartości administracyjne, nie fikcja): bramka walidacji blokuje/przepuszcza
+  poprawnie, insert → draft, re-import bez `--publish` zostaje draftem,
+  `--publish` przełącza na publish, kolejny re-import nie cofa statusu,
+  wszystkie pola ACF i obie taksonomie zapisane poprawnie, URL
+  `/obszar-dzialania/{slug}/` zwraca HTTP 200, liczba postów po 3
+  przebiegach: nadal 1 (idempotencja potwierdzona).
+- Uruchomienie na obecnym `data/miasta.csv` (sam nagłówek, punkt 5) kończy
+  się poprawnie komunikatem „nic do zaimportowania” — importer gotowy,
+  czeka na dane.
+
 ## Świadomie NIE zrobione / odłożone
 
 - **ACF Pro** — brak licencji klienta. Gdy dojdzie: zamiana pól textarea
@@ -215,14 +253,16 @@ Pełna głębia, wszystkie 6 szablonów z sekcji 16 na raz (decyzja użytkownika
 
 ## Następne kroki wg kolejności z sekcji 16 CLAUDE.md
 
-6. Importer WP-CLI (idempotentny) — `scripts/import-locations.php`,
-   wzorzec `require:` w `wp-cli.yml` już ustalony w punkcie 4
 7. `dedup-gate.py`
 8. Schema, sitemapy, linkowanie wewnętrzne, breadcrumbs
 9. Wydajność i Core Web Vitals
-10. Mapa 301 z baseline + test przekierowań
-11. `indexation-report.py`
-12. Deploy + GSC
+10. Mapa 301 z baseline + test przekierowań — **zablokowane**: wymaga
+    `seo/baseline/` (eksport GSC 16 mies., crawl starego
+    olechpartners.com, sekcja 13), do którego nie mamy dostępu w tej sesji.
+11. `indexation-report.py` — da się zbudować jako narzędzie, ale bez
+    realnego dostępu do GSC API nie da się przetestować na żywo.
+12. Deploy + GSC — **zablokowane**: wymaga realnych dostępów (hosting,
+    domena, GSC) z sekcji 17.
 
 Pamiętać: „Osobna sesja na każdy punkt. Nie łącz.” (sekcja 16 CLAUDE.md).
 

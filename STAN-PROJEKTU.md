@@ -11,13 +11,20 @@ nadrzędna to zawsze `CLAUDE.md`.
 - Admin WP: `https://olech.ddev.site/wp-admin/` — login `admin` / hasło `admin123`
   (tylko lokalne DDEV, do zmiany).
 - WP-CLI dostępny przez `ddev wp ...` (lokalnie w tej sesji: `ddev exec wp ...`).
-- **Git: praca z punktu 8 (patrz niżej) nie jest jeszcze scommitowana.**
-  Nowe/zmienione ścieżki: `inc/schema.php`, `inc/sitemap.php`,
-  `blocks/breadcrumbs/`, `blocks/lokalizacje-przyklad/`,
-  `blocks/poradniki-przyklad/`, `inc/post-types.php` (filtr `term_link`),
-  `functions.php`, `style.css`, 6 szablonów, `scripts/check-internal-links.py`.
-  Punkty 1–7 są już scommitowane (`ccef682`, `a585196`, `f907a77`,
-  `bc452dc`, `cb7dfaf`).
+- **Git: praca z punktu 9 (patrz niżej) nie jest jeszcze scommitowana.**
+  Nowe/zmienione ścieżki: `inc/wydajnosc.php`, `functions.php`,
+  `.gitignore` (dodane `wp-content/object-cache.php`). Punkty 1–8 są już
+  scommitowane (`ccef682`, `a585196`, `f907a77`, `bc452dc`, `cb7dfaf`,
+  `ee083e7`).
+- **Redis object cache działa lokalnie w tym DDEV** (`ddev get
+  ddev/ddev-redis` + `wp plugin install redis-cache --activate` +
+  `WP_REDIS_HOST=redis` w `wp-config.php` + `wp redis enable`) —
+  **ale nic z tego nie jest wersjonowane** (`.ddev/`, `wp-content/plugins/`
+  i `wp-config.php` są w `.gitignore` z założenia, sprzed tej sesji). Po
+  `ddev restart` na świeżym sklonowaniu repo trzeba te kroki powtórzyć
+  ręcznie, inaczej Redis nie będzie aktywny (strona i tak działa bez niego,
+  po prostu bez obiektowego cache). Ta sama komenda działa identycznie
+  w każdej kolejnej sesji na tym samym repo.
 
 ## Zrobione — punkty 1–3 z sekcji 16 CLAUDE.md
 
@@ -338,6 +345,43 @@ Schema, sitemapy, linkowanie wewnętrzne, breadcrumbs ✅
   teraz; gdy ktoś z dostępem do wp-admin dokończy kreator Rank Math, jego
   sitemapy standardowo przejmą tę rolę.
 
+## Zrobione — punkt 9 z sekcji 16 CLAUDE.md
+
+Wydajność i Core Web Vitals ✅
+
+- **Audyt strukturalny bieżącego stanu** (front page, `/uslugi/`, usługa,
+  kontakt): brak jQuery (nic go nie ładuje), brak jakichkolwiek zewnętrznych
+  domen/CDN w `<head>` poza natywnym WP REST/oEmbed, `style.css` ładowany
+  z tego samego originu, żadnych `@import`/`googleapis`/`gstatic` w CSS ani
+  `theme.json`. Mapa Google (facade z punktu 3) i sitemapy (punkt 8) już
+  spełniały wymagania sekcji 14 — potwierdzone, nie zmienione.
+- **Brak Lighthouse/Chrome headless w tym środowisku** — nie da się
+  zmierzyć realnych LCP/INP/CLS w tej sesji. Weryfikacja była strukturalna
+  (brak render-blocking zasobów, brak ciężkiego JS, brak obrazów na razie
+  w ogóle — więc i brak ryzyka CLS/LCP z tego tytułu), nie pomiarowa.
+  Do zrobienia realnym narzędziem (PageSpeed Insights/Lighthouse) po
+  wdrożeniu prawdziwych obrazów i brandingu.
+- **`inc/wydajnosc.php`** — filtr `image_editor_output_format`: WordPress
+  automatycznie generuje WebP dla JPEG/PNG przy uploadzie (natywny
+  mechanizm WP 5.8+, bez pluginu) — zweryfikowane realnym testowym
+  uploadem (posprzątany): wszystkie wygenerowane rozmiary trafiły jako
+  `.webp`/`image/webp`. Zadziała automatycznie, gdy tylko pojawią się
+  prawdziwe zdjęcia (zespół/Daniel Olech, sekcja 17) — nic więcej nie
+  trzeba wtedy robić.
+- **Redis object cache** (sekcja 3: „Cache: obiektowy Redis + cache
+  stron") — zainstalowany i **zweryfikowany jako działający** w tym DDEV
+  (`Status: Connected`, drop-in aktywny), ale świadomie **niewersjonowany**
+  — `.ddev/`, `wp-content/plugins/` i `wp-config.php` są w `.gitignore` od
+  początku projektu (sprzed tej sesji), więc konfiguracja Redis dla
+  lokalnego DDEV nie propaguje się przez git. Dokładna procedura
+  odtworzenia opisana w sekcji „Środowisko" wyżej. **Cache stron** (druga
+  połowa wymogu z sekcji 3) to decyzja zależna od docelowego hostingu
+  (Nginx FastCGI cache / Varnish / CDN / plugin) — nieznanego w tej sesji
+  (sekcja 17: dostępy hostingowe czekają na klienta) — odłożone do punktu 12.
+- `wp-content/object-cache.php` (drop-in wygenerowany przez plugin Redis)
+  dodany do `.gitignore` — brakowało tego wpisu, mogło przypadkiem trafić
+  do repo przy następnym `git add -A`.
+
 ## Świadomie NIE zrobione / odłożone
 
 - **ACF Pro** — brak licencji klienta. Gdy dojdzie: zamiana pól textarea
@@ -378,7 +422,6 @@ Schema, sitemapy, linkowanie wewnętrzne, breadcrumbs ✅
 
 ## Następne kroki wg kolejności z sekcji 16 CLAUDE.md
 
-9. Wydajność i Core Web Vitals
 10. Mapa 301 z baseline + test przekierowań — **zablokowane**: wymaga
     `seo/baseline/` (eksport GSC 16 mies., crawl starego
     olechpartners.com, sekcja 13), do którego nie mamy dostępu w tej sesji.

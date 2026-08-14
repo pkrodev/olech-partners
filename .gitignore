@@ -17,5 +17,6 @@ wp-content/themes/*
 .env
 wp-content/languages/
 wp-content/index.php
+wp-content/object-cache.php
 __pycache__/
 *.pyc

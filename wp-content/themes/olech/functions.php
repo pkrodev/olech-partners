@@ -8,6 +8,7 @@ require get_template_directory() . '/inc/blocks.php';
 require get_template_directory() . '/inc/formularz.php';
 require get_template_directory() . '/inc/schema.php';
 require get_template_directory() . '/inc/sitemap.php';
+require get_template_directory() . '/inc/wydajnosc.php';
 
 add_action( 'after_setup_theme', function () {
 	load_theme_textdomain( 'olech', get_template_directory() . '/languages' );

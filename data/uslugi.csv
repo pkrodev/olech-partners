@@ -1,0 +1,6 @@
+slug,nazwa,kategoria_uslugi,cena_od,cena_do,jednostka_ceny,menu_order,uslugi_powiazane,excerpt
+badanie-wariografem,Badanie wariografem,Badania i technika,2000,2000,zl,10,wykrywanie-podsluchow|ustalenie-miejsca-pobytu|wywiad-personalny,"Profesjonalne badanie poligraficzne w Radomiu i całej Polsce — cena podana wprost, wynik jako materiał wspierający dalsze działania."
+obserwacja,Obserwacja,Obserwacja,,,,20,ustalenie-miejsca-pobytu|wywiad-personalny,"Dyskretna obserwacja osób i miejsc prowadzona przez licencjonowanych detektywów, z pełną dokumentacją."
+ustalenie-miejsca-pobytu,Ustalenie miejsca pobytu,Sprawy rodzinne i osobiste,,,,30,obserwacja|wywiad-personalny|badanie-wariografem,"Ustalamy aktualne miejsce pobytu osoby — w sprawach rodzinnych, alimentacyjnych i spadkowych, legalnie i dyskretnie."
+wywiad-personalny,Wywiad personalny,Sprawy rodzinne i osobiste,,,,40,ustalenie-miejsca-pobytu|obserwacja|badanie-wariografem,"Sprawdzamy wiarygodność i przeszłość osoby na potrzeby decyzji rodzinnych, osobistych lub biznesowych."
+wykrywanie-podsluchow,Wykrywanie podsłuchów,Badania i technika,,,,50,badanie-wariografem|obserwacja,"Wykrywanie podsłuchów i urządzeń śledzących w domu, biurze lub samochodzie — kontrola techniczna z raportem z badania."

@@ -1,0 +1,26 @@
+[
+  {
+    "pytanie": "Ile kosztuje wykrywanie podsłuchów?",
+    "odpowiedz": "Zależy od liczby i wielkości kontrolowanych pomieszczeń oraz zakresu (np. czy obejmuje też pojazd) — {{LOREM: zakres}}. Wycenę przedstawiamy po konsultacji wstępnej."
+  },
+  {
+    "pytanie": "Jak długo trwa kontrola techniczna?",
+    "odpowiedz": "Jednorazowa kontrola gabinetu to zwykle kilka godzin, pełna kontrola biura, kilku pomieszczeń i pojazdu wymaga więcej czasu."
+  },
+  {
+    "pytanie": "Co dzieje się, jeśli znajdziecie podsłuch lub lokalizator?",
+    "odpowiedz": "Dokumentujemy znalezisko fotograficznie w miejscu ujawnienia, przed jakąkolwiek ingerencją, i omawiamy z klientem dalsze kroki, w tym możliwość zgłoszenia sprawy odpowiednim organom."
+  },
+  {
+    "pytanie": "Czy kontrola obejmuje też telefon lub komputer?",
+    "odpowiedz": "W podstawowym zakresie sprawdzamy widoczne oznaki nieautoryzowanego oprogramowania monitorującego; przy podejrzeniu poważniejszej ingerencji informatycznej kierujemy do specjalistów IT security."
+  },
+  {
+    "pytanie": "Czy kontrola jest dyskretna?",
+    "odpowiedz": "Tak — dla firm rekomendujemy kontrolę poza godzinami pracy, żeby nie budzić niepokoju wśród pracowników i nie ostrzec ewentualnej osoby odpowiedzialnej za montaż urządzenia."
+  },
+  {
+    "pytanie": "Czy prowadzicie kontrole techniczne poza Radomiem?",
+    "odpowiedz": "Tak, dzięki sieci licencjonowanych współpracowników prowadzimy kontrole techniczne w całej Polsce."
+  }
+]

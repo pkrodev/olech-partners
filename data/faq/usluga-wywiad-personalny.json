@@ -1,0 +1,26 @@
+[
+  {
+    "pytanie": "Ile kosztuje wywiad personalny?",
+    "odpowiedz": "Zależy od głębokości i zakresu sprawdzenia — {{LOREM: zakres}}. Wycenę przedstawiamy po ustaleniu konkretnego zakresu podczas konsultacji."
+  },
+  {
+    "pytanie": "Jakie informacje można ustalić w ramach wywiadu personalnego?",
+    "odpowiedz": "W zależności od zakresu zlecenia: weryfikację tożsamości i historii zawodowej, a w pogłębionym wywiadzie także sytuację finansową (w zakresie jawnym), powiązania biznesowe czy reputację w środowisku zawodowym."
+  },
+  {
+    "pytanie": "Czy wywiad personalny jest legalny?",
+    "odpowiedz": "Tak, pod warunkiem że informacje są pozyskiwane legalnie dostępnymi metodami i w zakresie proporcjonalnym do uzasadnionego celu zlecenia — działamy zgodnie z przepisami o ochronie danych osobowych."
+  },
+  {
+    "pytanie": "Czy sprawdzana osoba dowie się o wywiadzie?",
+    "odpowiedz": "Wywiad środowiskowy prowadzimy dyskretnie — rozmówcy nie są informowani, kto i w jakim celu zleca sprawdzenie."
+  },
+  {
+    "pytanie": "Ile trwa wywiad personalny?",
+    "odpowiedz": "Podstawowa weryfikacja może zamknąć się w kilku dniach, pogłębiony wywiad obejmujący wiele źródeł — od jednego do kilku tygodni."
+  },
+  {
+    "pytanie": "Czy wywiad personalny obejmuje osoby spoza Radomia?",
+    "odpowiedz": "Tak, dzięki sieci licencjonowanych współpracowników prowadzimy wywiady środowiskowe w całej Polsce."
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "pytanie": "Ile kosztuje obserwacja detektywistyczna?",
+    "odpowiedz": "Cena zależy od czasu trwania, liczby zaangażowanych detektywów i złożoności sprawy — {{LOREM: zakres zł/h + minimum godzin}}. Dokładną wycenę przedstawiamy po konsultacji wstępnej."
+  },
+  {
+    "pytanie": "Czy obserwacja prowadzona przez detektywa jest legalna?",
+    "odpowiedz": "Tak, pod warunkiem że prowadzi ją licencjonowany detektyw działający zgodnie z ustawą o usługach detektywistycznych, bez naruszania dóbr osobistych ponad to, co uzasadnia cel zlecenia."
+  },
+  {
+    "pytanie": "Czy osoba obserwowana dowie się, że jest obserwowana?",
+    "odpowiedz": "Obserwacja jest dyskretna z założenia — jej sens polega na tym, żeby obserwowana osoba zachowywała się naturalnie, a nie zmieniała zachowania, wiedząc, że jest obserwowana."
+  },
+  {
+    "pytanie": "Jak długo trwa obserwacja?",
+    "odpowiedz": "Zależy od sprawy — od kilku godzin przy jednorazowej obserwacji do kilku dni lub tygodni, gdy potrzebny jest dłuższy okres, żeby ustalić wzorzec zachowania."
+  },
+  {
+    "pytanie": "Czy materiał z obserwacji mogę wykorzystać w sądzie?",
+    "odpowiedz": "Dokumentacja z obserwacji (notatki, zdjęcia, opis chronologiczny) może być istotnym materiałem w wielu rodzajach postępowań, ale jej dopuszczalność i sposób wykorzystania zależą od konkretnej sprawy — rekomendujemy konsultację z prawnikiem."
+  },
+  {
+    "pytanie": "Czy prowadzicie obserwacje poza Radomiem?",
+    "odpowiedz": "Tak, dzięki sieci licencjonowanych współpracowników prowadzimy obserwacje w całej Polsce."
+  }
+]

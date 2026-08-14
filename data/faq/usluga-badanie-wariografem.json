@@ -1,0 +1,26 @@
+[
+  {
+    "pytanie": "Ile kosztuje badanie wariografem?",
+    "odpowiedz": "Badanie wariografem kosztuje 2000 zł. Cena obejmuje konsultację wstępną, przygotowanie pytań, samo badanie oraz pisemny raport z wynikiem."
+  },
+  {
+    "pytanie": "Czy wynik badania wariografem jest dowodem w sądzie?",
+    "odpowiedz": "Nie jest samodzielnym, rozstrzygającym dowodem — jego dopuszczalność i waga zależą od rodzaju postępowania i oceny sądu. Traktujemy go jako materiał wspierający dalsze działania, nie jako gotowy dowód."
+  },
+  {
+    "pytanie": "Czy osoba badana musi wyrazić zgodę na badanie?",
+    "odpowiedz": "Tak. Badanie wariografem przeprowadzamy wyłącznie za świadomą, dobrowolną zgodą osoby badanej — bez zgody badanie się nie odbywa."
+  },
+  {
+    "pytanie": "Ile trwa badanie i kiedy otrzymam wynik?",
+    "odpowiedz": "Samo badanie trwa zwykle kilka godzin (rozmowa wstępna, kalibracja, badanie właściwe, rozmowa poegzaminacyjna). Cały proces od pierwszego kontaktu do przekazania raportu zajmuje zwykle od kilku do kilkunastu dni, w zależności od terminu badania i złożoności pytań."
+  },
+  {
+    "pytanie": "Gdzie odbywa się badanie?",
+    "odpowiedz": "{{LOREM: standardowe miejsce przeprowadzania badania}}."
+  },
+  {
+    "pytanie": "Czy mogę zlecić badanie wariografem poza Radomiem?",
+    "odpowiedz": "Tak — sprawy prowadzimy w całej Polsce dzięki sieci licencjonowanych współpracowników, mając bazę operacyjną w Radomiu."
+  }
+]

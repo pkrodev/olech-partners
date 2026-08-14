@@ -1,0 +1,26 @@
+[
+  {
+    "pytanie": "Ile kosztuje ustalenie miejsca pobytu?",
+    "odpowiedz": "Zależy od trudności sprawy i ilości dostępnych na starcie informacji — {{LOREM: zakres}}. Wycenę przedstawiamy po konsultacji wstępnej."
+  },
+  {
+    "pytanie": "Jak długo trwa ustalenie miejsca pobytu?",
+    "odpowiedz": "Od kilku dni, gdy pierwszy trop okazuje się trafny, do kilku tygodni, gdy osoba poszukiwana świadomie unika pozostawiania śladów."
+  },
+  {
+    "pytanie": "Czy mogę zlecić ustalenie miejsca pobytu do sprawy alimentacyjnej lub spadkowej?",
+    "odpowiedz": "Tak, to jedno z najczęstszych zastosowań tej usługi — pomagamy ustalić aktualny adres do celów doręczeń sądowych, egzekucyjnych czy spadkowych."
+  },
+  {
+    "pytanie": "Czy potrzebuję podstawy prawnej, żeby zlecić ustalenie miejsca pobytu?",
+    "odpowiedz": "Weryfikujemy, czy zlecający ma uzasadniony interes w ustaleniu miejsca pobytu danej osoby (np. jest stroną postępowania, wierzycielem, członkiem rodziny) — to standardowy element weryfikacji każdego zlecenia."
+  },
+  {
+    "pytanie": "Czy ustalicie też, z kim dana osoba przebywa lub jak wygląda jej codzienne życie?",
+    "odpowiedz": "To wykracza poza samo ustalenie miejsca pobytu — w takich sprawach zwykle łączymy tę usługę z obserwacją, o czym rozmawiamy już podczas konsultacji wstępnej."
+  },
+  {
+    "pytanie": "Czy prowadzicie takie ustalenia w całej Polsce?",
+    "odpowiedz": "Tak, dzięki sieci licencjonowanych współpracowników działamy dojazdowo w całym kraju, z bazą operacyjną w Radomiu."
+  }
+]

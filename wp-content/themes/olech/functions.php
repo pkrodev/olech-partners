@@ -15,6 +15,12 @@ add_action( 'after_setup_theme', function () {
 
 	add_theme_support( 'post-thumbnails' );
 	add_theme_support( 'responsive-embeds' );
+	add_theme_support( 'custom-logo', array(
+		'height'      => 200,
+		'width'       => 200,
+		'flex-height' => true,
+		'flex-width'  => true,
+	) );
 	add_theme_support(
 		'html5',
 		array( 'comment-list', 'comment-form', 'search-form', 'gallery', 'caption', 'script', 'style' )
@@ -28,6 +34,16 @@ add_action( 'wp_enqueue_scripts', function () {
 		array(),
 		wp_get_theme()->get( 'Version' )
 	);
+
+	if ( is_front_page() ) {
+		wp_enqueue_script(
+			'olech-header-scroll',
+			get_template_directory_uri() . '/assets/js/header-scroll.js',
+			array(),
+			wp_get_theme()->get( 'Version' ),
+			array( 'strategy' => 'defer' )
+		);
+	}
 } );
 
 // Bez emoji-skryptów i zbędnych meta w <head> — sekcja 14 CLAUDE.md (wydajność).

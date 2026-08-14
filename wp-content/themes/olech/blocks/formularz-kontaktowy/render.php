@@ -27,7 +27,7 @@ return function () {
 				Zgadzam się na przetwarzanie danych w celu kontaktu w sprawie zgłoszenia.
 			</label>
 			<p class="olech-formularz__tajemnica">Zgłoszenie objęte jest tajemnicą zawodową detektywa.</p>
-			<button type="submit" class="olech-btn">Wyślij zgłoszenie</button>
+			<button type="submit" class="olech-btn olech-btn--zloto">Wyślij zgłoszenie</button>
 			<p class="olech-formularz__czas-odpowiedzi">{{LOREM: deklarowany czas odpowiedzi na zgłoszenie}}</p>
 		</form>
 	</div>

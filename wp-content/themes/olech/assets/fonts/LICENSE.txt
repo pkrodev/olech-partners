@@ -1,0 +1,8 @@
+Fonty w tym katalogu (Inter, Playfair Display) są udostępnione na licencji
+SIL Open Font License 1.1 — wolno je pobierać, self-hostować i
+redystrybuować w ramach tego projektu.
+
+Inter — https://fonts.google.com/specimen/Inter
+Playfair Display — https://fonts.google.com/specimen/Playfair+Display
+
+Pełny tekst licencji: https://openfontlicense.org/

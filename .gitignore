@@ -20,3 +20,10 @@ wp-content/index.php
 wp-content/object-cache.php
 __pycache__/
 *.pyc
+
+# Surowe materiały źródłowe od klienta / do brandingu — dane już
+# wyekstrahowane do CLAUDE.md (sekcja 17) i do theme/assets (logo);
+# same foldery zostają lokalnie, nie w historii gita (nieformalne notatki,
+# duplikat przetworzonych assetów).
+/logo/
+/od klienta/

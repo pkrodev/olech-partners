@@ -1,0 +1,32 @@
+Zdjęcia stockowe użyte tymczasowo do czasu dostarczenia przez klienta
+realnych fotografii (Daniel Olech, sprzęt, miejsce badania — sekcja 17
+CLAUDE.md). Źródło: Openverse (openverse.org), licencje CC BY / CC0 —
+wymagana atrybucja dla zdjęć CC BY.
+
+hero-warszawa.jpg
+  "Warsaw by night" by Leszek.Leszczynski, CC BY 2.0
+  https://www.flickr.com/photos/47190679@N06/4697727148
+
+uslugi/badanie-wariografem.jpg
+  "heartbeat" by Rosmarie Voegtli, CC BY 2.0
+  https://www.flickr.com/photos/94212497@N00/5343361247
+
+uslugi/obserwacja.jpg
+  "Vintage Camera Lens Macro" by jcubic, CC BY-SA 2.0
+  https://www.flickr.com/photos/56196558@N08/50132360368
+
+uslugi/ustalenie-miejsca-pobytu.jpg
+  "Compass Study" by Calsidyrose, CC BY 2.0
+  https://www.flickr.com/photos/17557997@N02/4925267732
+
+uslugi/wywiad-personalny.jpg
+  "Pen, Diary and Glasses" by Generationbass.com, CC BY 2.0
+  https://www.flickr.com/photos/46959536@N04/4827013488
+
+uslugi/wykrywanie-podsluchow.jpg
+  "Free circuit board macro image", CC0 1.0 (domena publiczna)
+  https://www.rawpixel.com/image/5920287/
+
+uslugi/windykacja.jpg
+  "Legal Contract & Signature - Warm Tones" by Blogtrepreneur, CC BY 2.0
+  https://commons.wikimedia.org/w/index.php?curid=55666535

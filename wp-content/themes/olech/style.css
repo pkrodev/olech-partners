@@ -1,63 +1,400 @@
 /*
 Theme Name: Olech & Partners
-Version: 0.1.0
+Version: 0.3.0
 Requires PHP: 8.1
 */
 
 /*
- * Minimalny CSS layoutowy — bez systemu kolorów/typografii (czeka na
- * branding klienta, punkt 1 z sekcji 16 CLAUDE.md). Wyłącznie układ,
- * żeby własne bloki z punktu 3 były czytelne do testowania.
+ * System wizualny: czarny / złoto / biały, wg starej strony klienta
+ * (olechpartners.com) i loga (korona + ornamenty, folder /logo). Kolory
+ * i fonty zdefiniowane w theme.json (jedno źródło prawdy — te reguły
+ * odwołują się do presetów WP, nie do surowych wartości hex), tu tylko
+ * layout i detale, których theme.json nie obejmuje. Fonty self-hosted
+ * (assets/fonts/, sekcja 3 CLAUDE.md — zakaz CDN).
  */
 
-.olech-sekcja {
-	margin-block: 2rem;
+/* Reset — WP core nie zeruje marginesu/paddingu <html>/<body> samo z
+   siebie (domyślne ~8px przeglądarki dawały biały pasek dookoła strony,
+   też nad hero). */
+html,
+body {
+	margin: 0;
+	padding: 0;
 }
 
-.olech-hero .olech-hero__lead {
-	max-width: 60ch;
+/* Prawdziwa przyczyna białego paska NAD hero (nie sam margines body):
+   WP dokłada domyślny odstęp między blokami wewnątrz layout:constrained
+   — `:root :where(.is-layout-constrained) > *{margin-block-start: 24px}`
+   — wyjątek jest tylko dla :first-child. Nasze pasy pełnej szerokości
+   (.olech-band, .olech-hero) są bezpośrednimi dziećmi <main>, więc KAŻDY
+   z nich (poza pierwszym) i tak dostawał 24px odstępu, w którym
+   prześwitywało białe tło strony — widoczne jako cienki pasek między
+   sekcjami, a przy .olech-hero konkretnie nad nim. Zerujemy to tu wprost,
+   odstępy WEWNĄTRZ sekcji dają własne `padding-block`. */
+.olech-hero,
+.olech-band {
+	margin-block: 0 !important;
+}
+
+.olech-sekcja {
+	margin-block: 3rem;
+}
+
+/* ---------- Nagłówek ---------- */
+
+.olech-header {
+	background: var(--wp--preset--color--czarny);
+	padding-block: 1rem;
+	padding-inline: clamp(1.25rem, 4vw, 3rem);
+	max-width: var(--wp--style--global--wide-size, 1400px);
+	margin-inline: auto;
+}
+
+/* Na stronie głównej: nagłówek niewidoczny na samej górze (na tle hero),
+   pokazuje się dopiero po przewinięciu — JS przełącza klasę na <body>
+   (assets/js/header-scroll.js, wpięty tylko na front-page). Na pozostałych
+   stronach nagłówek zachowuje się normalnie (statycznie, zawsze widoczny). */
+body.home .olech-header {
+	position: fixed;
+	inset-inline: 0;
+	top: 0;
+	z-index: 60;
+	transform: translateY(-100%);
+	transition: transform 0.25s ease;
+	max-width: none;
+}
+
+body.home.olech-scrolled .olech-header {
+	transform: translateY(0);
+}
+
+.olech-header .wp-block-site-logo img {
+	max-height: 56px;
+	width: auto;
+}
+
+/* !important świadomie: bije generowaną globalną regułę linku z theme.json
+   (`a:where(:not(.wp-element-button))`), która ma bardzo niską, ale wciąż
+   nieprzewidywalną specyficzność względem CSS-u motywu — pewniej nadpisać
+   wprost niż liczyć na kolejność ładowania arkuszy. */
+.olech-header .wp-block-navigation a,
+.olech-header .wp-block-navigation .wp-block-navigation-item__content {
+	color: var(--wp--preset--color--tekst-jasny) !important;
+	text-decoration: none;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+}
+
+.olech-header .wp-block-navigation a:hover,
+.olech-header .wp-block-navigation .wp-block-navigation-item__content:hover {
+	color: var(--wp--preset--color--zloto-jasne) !important;
+}
+
+/* ---------- Hero ---------- */
+
+.olech-hero {
+	background:
+		linear-gradient(180deg, rgba(20, 17, 13, 0.88) 0%, rgba(20, 17, 13, 0.94) 60%, var(--wp--preset--color--czarny) 100%),
+		url('assets/img/hero-warszawa.webp') center 30% / cover no-repeat;
+	color: var(--wp--preset--color--tekst-jasny);
+	padding-block: 4rem;
+	text-align: center;
+}
+
+.olech-hero .wp-block-site-logo {
+	margin-bottom: 1.5rem;
+}
+
+.olech-hero .wp-block-site-logo img {
+	max-width: min(260px, 70vw);
+	width: 100%;
+	height: auto;
+	margin-inline: auto;
+}
+
+.olech-hero__eyebrow {
+	color: var(--wp--preset--color--zloto-jasne);
+	text-transform: uppercase;
+	letter-spacing: 0.15em;
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 600;
+}
+
+.olech-hero h1 {
+	color: var(--wp--preset--color--bialy);
+	margin-block: 0.5rem 1rem;
+}
+
+.olech-hero__lead {
+	max-width: 56ch;
+	margin-inline: auto;
+	font-size: var(--wp--preset--font-size--large);
+	color: var(--wp--preset--color--tekst-jasny);
 }
 
 .olech-cta-row {
 	display: flex;
+	justify-content: center;
 	gap: 1rem;
 	flex-wrap: wrap;
-	margin-block-start: 1rem;
+	margin-block-start: 1.75rem;
 }
 
 .olech-btn {
 	display: inline-block;
-	padding: 0.75em 1.5em;
-	border: 1px solid currentColor;
-	border-radius: 0.25em;
+	padding: 0.85em 1.75em;
+	border-radius: 0.2em;
 	text-decoration: none;
+	font: inherit;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	cursor: pointer;
+	transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
+
+.olech-btn--zloto {
+	background: linear-gradient(135deg, var(--wp--preset--color--zloto-jasne) 0%, var(--wp--preset--color--zloto) 100%);
+	color: var(--wp--preset--color--czarny);
+	border: 1px solid var(--wp--preset--color--zloto);
+}
+
+.olech-btn--obrys {
+	background: transparent;
+	color: var(--wp--preset--color--tekst-jasny);
+	border: 1px solid var(--wp--preset--color--zloto-jasne);
+}
+
+.olech-btn:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 14px rgba(185, 135, 28, 0.35);
+}
+
+/* Ozdobny rozdzielacz nawiązujący do ornamentu w logo — bez dodatkowego
+   pliku graficznego, czysty CSS. */
+.olech-divider {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.75rem;
+	margin-block: 2.5rem;
+	color: var(--wp--preset--color--zloto);
+}
+
+.olech-divider::before,
+.olech-divider::after {
+	content: "";
+	height: 1px;
+	width: clamp(2.5rem, 10vw, 6rem);
+	background: linear-gradient(90deg, transparent, currentColor);
+}
+
+.olech-divider::after {
+	background: linear-gradient(90deg, currentColor, transparent);
+}
+
+.olech-divider__znak {
+	font-size: 1.1rem;
+	line-height: 1;
+}
+
+/* ---------- Pasy pełnej szerokości (naprzemienne tło sekcji) ----------
+   Wzorzec: outer align:full grupa niesie kolor tła na całą szerokość
+   ekranu, jej WŁASNY layout:constrained centruje właściwą treść z
+   powrotem do czytelnej szerokości (var(--wp--style--global--content-size)).
+   Bez tego cała strona wygląda jak jedna wąska kolumna. */
+
+.olech-band {
+	padding-block: 3rem;
+}
+
+.olech-band--kremowy {
+	background: var(--wp--preset--color--kremowy);
+}
+
+.olech-band--bialy {
+	background: var(--wp--preset--color--bialy);
+}
+
+.olech-band--czarny {
+	background: var(--wp--preset--color--czarny);
+}
+
+/* ---------- Pasek zaufania ---------- */
 
 .olech-trust-bar {
 	display: flex;
-	gap: 1.5rem;
+	justify-content: center;
+	gap: 2rem;
 	flex-wrap: wrap;
-	font-size: 0.9em;
-	padding-block: 0.5rem;
-	border-block: 1px solid #ddd;
+	font-size: var(--wp--preset--font-size--small);
+	padding-block: 0.9rem;
+	color: var(--wp--preset--color--tekst);
 }
 
-.olech-uslugi__siatka {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-	gap: 1rem;
+.olech-trust-bar span {
+	position: relative;
+	padding-inline-start: 1.4em;
 }
 
-.olech-usluga-karta {
+.olech-trust-bar span::before {
+	content: "✓";
+	position: absolute;
+	left: 0;
+	color: var(--wp--preset--color--zloto);
+	font-weight: 700;
+}
+
+/* ---------- Usługi ---------- */
+
+.olech-uslugi {
+	text-align: center;
+	max-width: var(--wp--style--global--wide-size, 1400px) !important;
+	margin-inline: auto;
+}
+
+.olech-uslugi h2 {
+	margin-bottom: 2rem;
+}
+
+.olech-uslugi__lista {
 	display: flex;
 	flex-direction: column;
-	gap: 0.5rem;
-	padding: 1rem;
-	border: 1px solid #ddd;
-	border-radius: 0.25em;
+	gap: 1.5rem;
+	text-align: start;
+}
+
+.olech-usluga-wiersz {
+	display: grid;
+	grid-template-columns: minmax(220px, 320px) 1fr;
+	gap: 1.75rem;
+	align-items: stretch;
+	background: var(--wp--preset--color--bialy);
+	border: 1px solid var(--wp--preset--color--obwodka);
+	border-inline-start: 4px solid var(--wp--preset--color--zloto);
+	border-radius: 0.2em;
+	overflow: hidden;
 	text-decoration: none;
 	color: inherit;
+	transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
+
+.olech-usluga-wiersz:hover {
+	box-shadow: 0 10px 28px rgba(20, 17, 13, 0.12);
+	transform: translateY(-2px);
+}
+
+.olech-usluga-wiersz__zdjecie {
+	display: block;
+	min-height: 180px;
+}
+
+.olech-usluga-wiersz__zdjecie img {
+	width: 100%;
+	height: 100%;
+	min-height: 180px;
+	object-fit: cover;
+	display: block;
+}
+
+.olech-usluga-wiersz__tresc {
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+	padding: 1.5rem 1.75rem 1.5rem 0;
+}
+
+.olech-usluga-wiersz:has(.olech-usluga-wiersz__zdjecie) .olech-usluga-wiersz__tresc {
+	padding-inline-start: 0;
+}
+
+.olech-uslugi__lista > a:not(:has(.olech-usluga-wiersz__zdjecie)) .olech-usluga-wiersz__tresc {
+	padding-inline-start: 1.75rem;
+}
+
+.olech-usluga-wiersz__tytul {
+	font-family: var(--wp--preset--font-family--playfair-display);
+	font-weight: 700;
+	font-size: var(--wp--preset--font-size--large);
+	color: var(--wp--preset--color--czarny);
+}
+
+.olech-usluga-wiersz__opis {
+	color: var(--wp--preset--color--tekst);
+}
+
+.olech-usluga-wiersz__link {
+	margin-top: auto;
+	padding-top: 0.5rem;
+	color: var(--wp--preset--color--zloto);
+	font-weight: 600;
+	font-size: var(--wp--preset--font-size--small);
+}
+
+@media (max-width: 700px) {
+	.olech-usluga-wiersz {
+		grid-template-columns: 1fr;
+	}
+
+	.olech-usluga-wiersz__zdjecie,
+	.olech-usluga-wiersz__zdjecie img {
+		min-height: 160px;
+	}
+
+	.olech-usluga-wiersz__tresc,
+	.olech-usluga-wiersz:has(.olech-usluga-wiersz__zdjecie) .olech-usluga-wiersz__tresc {
+		padding: 1.25rem;
+	}
+}
+
+/* ---------- Dlaczego warto nam zaufać (strona główna) ---------- */
+
+.olech-dlaczego-my {
+	text-align: center;
+}
+
+.olech-dlaczego-my h2 {
+	margin-bottom: 2rem;
+}
+
+.olech-dlaczego-my__siatka {
+	text-align: start;
+	gap: 1.5rem !important;
+}
+
+.olech-dlaczego-my__punkt {
+	padding: 1.5rem;
+	background: var(--wp--preset--color--kremowy);
+	border-inline-start: 3px solid var(--wp--preset--color--zloto);
+	border-radius: 0.2em;
+}
+
+.olech-dlaczego-my__punkt h3 {
+	font-size: var(--wp--preset--font-size--large);
+	margin-bottom: 0.5rem;
+}
+
+.olech-dlaczego-my__punkt p {
+	color: var(--wp--preset--color--tekst);
+	margin: 0;
+}
+
+/* ---------- Sekcja wyróżniona (np. wariograf) ---------- */
+
+.olech-wariograf {
+	color: var(--wp--preset--color--tekst-jasny);
+	padding-block: 1.5rem 2.5rem;
+	text-align: center;
+}
+
+.olech-wariograf h2 {
+	color: var(--wp--preset--color--zloto-jasne);
+}
+
+.olech-wariograf a:not(.olech-btn) {
+	color: var(--wp--preset--color--zloto-jasne);
+}
+
+/* ---------- Sądy / gminy / FAQ / lokalizacje / poradniki ---------- */
 
 .olech-gminy__lista {
 	columns: 2;
@@ -65,51 +402,14 @@ Requires PHP: 8.1
 }
 
 .olech-faq__pozycja {
-	border-block-end: 1px solid #ddd;
-	padding-block: 0.75rem;
+	border-block-end: 1px solid var(--wp--preset--color--obwodka);
+	padding-block: 0.9rem;
 }
 
 .olech-faq__pozycja summary {
 	cursor: pointer;
 	font-weight: 600;
-}
-
-.olech-formularz__form {
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-	max-width: 40rem;
-}
-
-.olech-formularz__honeypot {
-	position: absolute;
-	left: -9999px;
-	width: 1px;
-	height: 1px;
-	overflow: hidden;
-}
-
-.olech-mapa__przycisk {
-	padding: 0.75em 1.5em;
-	border: 1px solid currentColor;
-	border-radius: 0.25em;
-	background: none;
-	cursor: pointer;
-}
-
-.olech-breadcrumbs ol {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.4em;
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	font-size: 0.85em;
-}
-
-.olech-breadcrumbs li:not(:last-child)::after {
-	content: "/";
-	margin-inline-start: 0.4em;
+	color: var(--wp--preset--color--czarny);
 }
 
 .olech-lokalizacje-przyklad ul,
@@ -122,6 +422,134 @@ Requires PHP: 8.1
 	padding: 0;
 }
 
+/* ---------- Formularz ---------- */
+
+.olech-formularz {
+	background: var(--wp--preset--color--kremowy);
+	padding: 2.5rem;
+	border-radius: 0.2em;
+	border: 1px solid var(--wp--preset--color--obwodka);
+	max-width: 44rem;
+	margin-inline: auto;
+}
+
+.olech-formularz__form {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	max-width: 40rem;
+}
+
+.olech-formularz__form label {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	font-weight: 600;
+	color: var(--wp--preset--color--czarny);
+}
+
+.olech-formularz__form input[type="text"],
+.olech-formularz__form textarea {
+	font: inherit;
+	padding: 0.65em 0.8em;
+	border: 1px solid var(--wp--preset--color--obwodka);
+	border-radius: 0.2em;
+	background: var(--wp--preset--color--bialy);
+}
+
+.olech-formularz__form input:focus,
+.olech-formularz__form textarea:focus {
+	outline: 2px solid var(--wp--preset--color--zloto);
+	outline-offset: 1px;
+}
+
+.olech-formularz__zgoda {
+	flex-direction: row !important;
+	align-items: flex-start;
+	font-weight: 400 !important;
+	font-size: var(--wp--preset--font-size--small);
+}
+
+.olech-formularz__tajemnica,
+.olech-formularz__czas-odpowiedzi {
+	font-size: var(--wp--preset--font-size--small);
+	color: var(--wp--preset--color--tekst);
+}
+
+.olech-formularz .olech-btn {
+	align-self: flex-start;
+}
+
+.olech-formularz__honeypot {
+	position: absolute;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}
+
+/* ---------- Mapa ---------- */
+
+.olech-mapa__przycisk {
+	padding: 0.75em 1.5em;
+	border: 1px solid var(--wp--preset--color--zloto);
+	border-radius: 0.2em;
+	background: none;
+	color: var(--wp--preset--color--czarny);
+	cursor: pointer;
+	font: inherit;
+	font-weight: 600;
+}
+
+.olech-mapa__przycisk:hover {
+	background: var(--wp--preset--color--kremowy);
+}
+
+/* ---------- Breadcrumbs ---------- */
+
+.olech-breadcrumbs {
+	padding-block: 1rem;
+}
+
+.olech-breadcrumbs ol {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4em;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: var(--wp--preset--font-size--small);
+	color: var(--wp--preset--color--tekst);
+}
+
+.olech-breadcrumbs a {
+	color: var(--wp--preset--color--tekst);
+	text-decoration: underline;
+	text-decoration-color: var(--wp--preset--color--obwodka);
+}
+
+.olech-breadcrumbs li:not(:last-child)::after {
+	content: "/";
+	margin-inline-start: 0.4em;
+	color: var(--wp--preset--color--obwodka);
+}
+
+/* ---------- Stopka ---------- */
+
+.olech-footer {
+	background: var(--wp--preset--color--czarny);
+	color: var(--wp--preset--color--tekst-jasny);
+	padding-block: 2.5rem;
+	font-size: var(--wp--preset--font-size--small);
+	text-align: center;
+}
+
+.olech-footer a {
+	color: var(--wp--preset--color--zloto-jasne);
+}
+
+/* ---------- CTA sticky (mobile) ---------- */
+
 .olech-cta-sticky {
 	display: none;
 }
@@ -133,8 +561,8 @@ Requires PHP: 8.1
 		inset-block-end: 0;
 		inset-inline: 0;
 		z-index: 100;
-		background: #fff;
-		border-block-start: 1px solid #ddd;
+		background: var(--wp--preset--color--czarny);
+		border-block-start: 1px solid var(--wp--preset--color--zloto);
 	}
 
 	.olech-cta-sticky a {
@@ -142,5 +570,16 @@ Requires PHP: 8.1
 		text-align: center;
 		padding: 1em;
 		text-decoration: none;
+		color: var(--wp--preset--color--tekst-jasny);
+		font-weight: 600;
+	}
+
+	.olech-cta-sticky a:hover {
+		color: var(--wp--preset--color--zloto-jasne);
+	}
+
+	/* Zostawiamy miejsce na dole, żeby sticky pasek nie zasłaniał treści. */
+	body {
+		padding-block-end: 3.25rem;
 	}
 }

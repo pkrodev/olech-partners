@@ -11,10 +11,13 @@ nadrzędna to zawsze `CLAUDE.md`.
 - Admin WP: `https://olech.ddev.site/wp-admin/` — login `admin` / hasło `admin123`
   (tylko lokalne DDEV, do zmiany).
 - WP-CLI dostępny przez `ddev wp ...` (lokalnie w tej sesji: `ddev exec wp ...`).
-- **Git: praca z punktu 7 (patrz niżej) nie jest jeszcze scommitowana.**
-  Nowe ścieżki: `scripts/dedup-gate.py`, `reports/dedup-fala-0.txt`
-  (realny raport z bieżącej treści usług, nie dane testowe). Punkty 1–6 są
-  już scommitowane (`ccef682`, `a585196`, `f907a77`, `bc452dc`).
+- **Git: praca z punktu 8 (patrz niżej) nie jest jeszcze scommitowana.**
+  Nowe/zmienione ścieżki: `inc/schema.php`, `inc/sitemap.php`,
+  `blocks/breadcrumbs/`, `blocks/lokalizacje-przyklad/`,
+  `blocks/poradniki-przyklad/`, `inc/post-types.php` (filtr `term_link`),
+  `functions.php`, `style.css`, 6 szablonów, `scripts/check-internal-links.py`.
+  Punkty 1–7 są już scommitowane (`ccef682`, `a585196`, `f907a77`,
+  `bc452dc`, `cb7dfaf`).
 
 ## Zrobione — punkty 1–3 z sekcji 16 CLAUDE.md
 
@@ -259,6 +262,82 @@ Importer WP-CLI, idempotentny ✅
   pory; sam skrypt to trywialny wrapper, ale zostawiony na później, żeby
   nie rozszerzać zakresu punktu 7 poza to, co sekcja 16 nazywa wprost.
 
+## Zrobione — punkt 8 z sekcji 16 CLAUDE.md
+
+Schema, sitemapy, linkowanie wewnętrzne, breadcrumbs ✅
+
+- **Schema (JSON-LD)** — `inc/schema.php`, hooki na `wp_head`, jedno źródło
+  prawdy per typ danych (ten sam wzorzec co istniejące już wcześniej
+  FAQPage w `blocks/faq/render.php`):
+  - `Organization`+`LocalBusiness` na stronie głównej, wyłącznie z
+    `olech_ustawienia_firmy()` — **cicho nic nie wypisuje**, dopóki
+    `nazwa_podmiotu`/`adres_radom` są puste (obecnie puste, czekają na
+    klienta). Zweryfikowane oboma stanami: brak przy pustych danych,
+    poprawny JSON-LD z `addressLocality: "Radom"` po tymczasowym
+    wypełnieniu testowym (posprzątane).
+  - `Service` (+opis, +provider) na `/uslugi/{x}/` — bez `areaServed`
+    (rozróżnienie z lokalizacją zgodnie z tabelą w sekcji 10).
+  - `Service`+`areaServed` (miasto jako `City`) na `/obszar-dzialania/{miasto}/`.
+  - `Article` z `author: Person "Daniel Olech"` na `/poradnik/{x}/` — imię
+    i nazwisko to potwierdzony fakt ze specyfikacji (sekcja 1: "Marka
+    eksperta — Daniel Olech"), nie fabrykacja; żadnych dodatkowych,
+    niepotwierdzonych pól (`jobTitle`/`hasCredential` czekają na
+    `/daniel-olech/` i dane z sekcji 17).
+  - **Świadomie pominięte**: `Review`/`AggregateRating` (zero realnych
+    opinii z GBP — sekcja 2.1 zabrania fabrykacji) i `Person` dla
+    `/daniel-olech/` (strona nie istnieje, poza zakresem punktu 3).
+- **Breadcrumbs** — nowy blok `blocks/breadcrumbs/` (wizualne `<nav><ol>` +
+  `BreadcrumbList` w jednym miejscu, jak FAQ), wpięty do 6 szablonów
+  (`single-usluga`, `single-lokalizacja`, `single`, `archive-usluga`,
+  `taxonomy-wojewodztwo`, `home`, `page-kontakt`). Pominięty na
+  `front-page` (breadcrumbs na stronie głównej nie mają sensu). „Obszar
+  działania" renderuje się jako zwykły tekst (nie link) dopóki strona pod
+  tym slugiem nie istnieje — automatycznie zacznie linkować, gdy powstanie.
+- **Odkryty i naprawiony bug**: `get_term_link()` dla taksonomii
+  `wojewodztwo` zwracał brzydki `?wojewodztwo=slug` zamiast
+  `/obszar-dzialania/slug/`, mimo że reguła przepisywania dla żądań
+  przychodzących działała poprawnie (`rewrite => false` + osobny
+  `add_rewrite_rule` nie robią tego automatycznie w drugą stronę). Naprawa:
+  filtr `term_link` w `inc/post-types.php`. Odkryte właśnie dzięki budowie
+  breadcrumbs — bez tego punktu prawdopodobnie zostałoby niezauważone
+  dłużej.
+- **Domknięta realna luka w linkowaniu wewnętrznym (sekcja 8.3)**: strony
+  usług nie linkowały do żadnej lokalizacji ani (w praktyce, bez ręcznej
+  relacji ACF) do poradnika; strony lokalizacji i artykuły poradnika miały
+  analogiczne braki. Nowe bloki `lokalizacje-przyklad` i
+  `poradniki-przyklad` (ten sam wzorzec LOREM-fallback co reszta biblioteki
+  blokow) wpięte do `single-usluga`, `single-lokalizacja` i `single` —
+  automatyczny fallback niezależny od tego, czy redaktor ustawił ręczne
+  relacje ACF.
+- **`scripts/check-internal-links.py`** — sprawdza już opublikowane strony
+  (przez WP REST API + fetch HTML, nie pliki źródłowe — większość linków
+  pochodzi z dynamicznie renderowanych bloków, więc realny wynik istnieje
+  dopiero po renderze) pod kątem minimów z sekcji 8.3 (2 usługi, 1
+  poradnik, 1 lokalizacja, kontakt). Zweryfikowany: na obecnym stanie
+  (5 usług, zero lokalizacji/poradnika) poprawnie i uczciwie raportuje
+  braki tylko w kategoriach poradnik/lokalizacje (exit 1, z jasnym
+  komunikatem że to oczekiwany, udokumentowany stan, nie błąd skryptu); po
+  tymczasowym dodaniu syntetycznej lokalizacji i artykułu — wszystkie 7
+  sprawdzonych stron przechodzi czysto (exit 0), potwierdzając że nowe
+  bloki fallback faktycznie zamykają lukę. Dane testowe posprzątane.
+  Zakres świadomie ograniczony do CPT-ów treściowych (usluga/lokalizacja/
+  poradnik) — strony-narzędzia (`/kontakt/`, huby) nie są tu skalowalnym
+  ryzykiem "ślepych stron" jak tysiące stron miast, więc nie są objęte
+  automatyczną walidacją.
+- **Sitemapy** — Rank Math (`rank_math_modules` zawiera `sitemap`) jest
+  aktywny, ale jego kreator konfiguracji nigdy nie został ukończony
+  (`rank_math_registration_step` nieustawione, `rank_math_known_post_types`
+  nie widzi nawet `usluga`/`lokalizacja`) — `/sitemap_index.xml` zwraca 404.
+  Dokończenie kreatora to krok w panelu wp-admin, którego nie dało się
+  bezpiecznie zrobić z CLI (ryzyko zepsucia wewnętrznego stanu pluginu bez
+  przejścia wizarda). **Zamiast tego**: `inc/sitemap.php` konfiguruje
+  wbudowany sitemap WordPressa (`/wp-sitemap.xml`, już działający,
+  automatycznie dzielący wg CPT/taksonomii, pomijający puste typy) —
+  `wp_sitemaps_max_urls` ustawiony na 200 (zweryfikowane), provider `users`
+  usunięty (cienka treść, brak wartości SEO). W pełni funkcjonalne już
+  teraz; gdy ktoś z dostępem do wp-admin dokończy kreator Rank Math, jego
+  sitemapy standardowo przejmą tę rolę.
+
 ## Świadomie NIE zrobione / odłożone
 
 - **ACF Pro** — brak licencji klienta. Gdy dojdzie: zamiana pól textarea
@@ -286,10 +365,19 @@ Importer WP-CLI, idempotentny ✅
 - **`data/wspolpracownicy.csv`** — nie istnieje, czeka na dane klienta
   (sekcja 17). Walidator `validate-miasta.py` obsługuje ten brak (ostrzega,
   nie blokuje).
+- **Kreator konfiguracji Rank Math nieukończony** — trzeba ręcznie przejść
+  przez wp-admin → Rank Math (ktoś z dostępem do panelu), żeby jego
+  sitemapy i pełna analiza SEO zaczęły działać. Do tego czasu sitemapy
+  obsługuje wbudowany mechanizm WP (`inc/sitemap.php`, w pełni funkcjonalny).
+- **`Review`/`AggregateRating` schema** — brak jakiegokolwiek mechanizmu w
+  kodzie (świadomie), bo nie ma realnych opinii z GBP. Do zrobienia dopiero
+  po uzyskaniu dostępu do GBP (sekcja 17).
+- **`/daniel-olech/`** — strona i `Person` schema z `hasCredential` nie
+  istnieją (poza zakresem punktu 3, i tak czekałyby na numer licencji z
+  sekcji 17).
 
 ## Następne kroki wg kolejności z sekcji 16 CLAUDE.md
 
-8. Schema, sitemapy, linkowanie wewnętrzne, breadcrumbs
 9. Wydajność i Core Web Vitals
 10. Mapa 301 z baseline + test przekierowań — **zablokowane**: wymaga
     `seo/baseline/` (eksport GSC 16 mies., crawl starego

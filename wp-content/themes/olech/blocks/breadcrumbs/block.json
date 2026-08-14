@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "olech/breadcrumbs",
+	"title": "Breadcrumbs",
+	"category": "widgets",
+	"icon": "list-view",
+	"description": "Breadcrumbs wizualne + schema BreadcrumbList (sekcja 10 i 15.5 CLAUDE.md).",
+	"textdomain": "olech"
+}

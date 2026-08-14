@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "olech/lokalizacje-przyklad",
+	"title": "Przykładowe lokalizacje",
+	"category": "widgets",
+	"icon": "location-alt",
+	"description": "Kilka linków do opublikowanych lokalizacji — domyka regułę min. 1 link do lokalizacji z każdej strony (sekcja 8.3 CLAUDE.md).",
+	"textdomain": "olech"
+}

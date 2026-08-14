@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "olech/poradniki-przyklad",
+	"title": "Przykładowe artykuły poradnika",
+	"category": "widgets",
+	"icon": "admin-post",
+	"description": "Kilka ostatnich artykułów poradnika — domyka regułę min. 1 link do poradnika z każdej strony (sekcja 8.3 CLAUDE.md), niezależnie od tego, czy ktoś ustawił ręczną relację ACF poradniki_powiazane.",
+	"textdomain": "olech"
+}

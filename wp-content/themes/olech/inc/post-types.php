@@ -160,6 +160,22 @@ function olech_rewrite_wojewodztwo() {
 	);
 }
 
+/**
+ * `wojewodztwo` ma `rewrite => false` (patrz komentarz w rejestracji
+ * taksonomii wyżej) — reguła nad tą funkcją obsługuje żądania PRZYCHODZĄCE
+ * do /obszar-dzialania/{slug}/, ale bez tego filtra get_term_link() sam
+ * z siebie generowałby brzydki URL ?wojewodztwo={slug} (odkryte przy
+ * budowie breadcrumbs w punkcie 8 — link był poprawny funkcjonalnie, ale
+ * nieładny/niekanoniczny wszędzie tam, gdzie coś linkuje do huba
+ * wojewódzkiego, np. blocks/breadcrumbs).
+ */
+add_filter( 'term_link', function ( $url, $term, $taxonomy ) {
+	if ( 'wojewodztwo' === $taxonomy ) {
+		return home_url( '/obszar-dzialania/' . $term->slug . '/' );
+	}
+	return $url;
+}, 10, 3 );
+
 // Rejestracje CPT/taksonomii/reguł żyją w 'init' — po (re)aktywacji motywu
 // trzeba przeflushować reguły przepisywania, inaczej permalinki 404-ują.
 add_action( 'after_switch_theme', 'flush_rewrite_rules' );

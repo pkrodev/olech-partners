@@ -11,10 +11,10 @@ nadrzędna to zawsze `CLAUDE.md`.
 - Admin WP: `https://olech.ddev.site/wp-admin/` — login `admin` / hasło `admin123`
   (tylko lokalne DDEV, do zmiany).
 - WP-CLI dostępny przez `ddev wp ...` (lokalnie w tej sesji: `ddev exec wp ...`).
-- **Git: praca z punktu 6 (patrz niżej) nie jest jeszcze scommitowana.**
-  Nowe/zmienione ścieżki: `scripts/import-locations.php`, `wp-cli.yml`
-  (dopisany require). Punkty 1–5 są już scommitowane (`ccef682`, `a585196`,
-  `f907a77`).
+- **Git: praca z punktu 7 (patrz niżej) nie jest jeszcze scommitowana.**
+  Nowe ścieżki: `scripts/dedup-gate.py`, `reports/dedup-fala-0.txt`
+  (realny raport z bieżącej treści usług, nie dane testowe). Punkty 1–6 są
+  już scommitowane (`ccef682`, `a585196`, `f907a77`, `bc452dc`).
 
 ## Zrobione — punkty 1–3 z sekcji 16 CLAUDE.md
 
@@ -223,6 +223,42 @@ Importer WP-CLI, idempotentny ✅
   się poprawnie komunikatem „nic do zaimportowania” — importer gotowy,
   czeka na dane.
 
+## Zrobione — punkt 7 z sekcji 16 CLAUDE.md
+
+`scripts/dedup-gate.py` ✅
+
+- Samodzielny skrypt Python (bez zależności od WP), liczy podobieństwo
+  shingle (n=5 słów, indeks Jaccarda) między plikami `content/**/*.md`.
+  Progi z sekcji 11: **65%** twardy (exit 1, import ma się zatrzymać),
+  **50%** ostrzegawczy (przechodzi, ale loguje). Znaczniki Markdown i
+  treść `{{LOREM: ...}}` są usuwane przed tokenizacją, żeby wspólna
+  struktura nagłówków (np. „## Problem klienta” w każdym pliku usługi,
+  sekcja 8.2) nie zawyżała sztucznie podobieństwa.
+- Użycie: `python3 scripts/dedup-gate.py --fala N [--new plik1.md ...]`
+  — bez `--new` robi self-check całego korpusu `content/`; z `--new`
+  porównuje tylko wskazane pliki z resztą (tryb docelowy przed importem
+  konkretnej partii). Raport zawsze do `reports/dedup-fala-{N}.txt`.
+- **Nie wpięty automatycznie w importery** (w przeciwieństwie do
+  `validate-miasta.py` w punkcie 6) — świadoma decyzja: sekcja 11 opisuje
+  to jako obowiązkowy krok proceduralny „przed każdym importem”, ale
+  dotyczy treści ze wszystkich CPT (usługi, lokalizacje, poradniki), więc
+  lepiej pasuje jako osobny, jawny krok w procesie niż zaszyty w jednym
+  konkretnym imporcie PHP. Do rozważenia później, czy wpiąć na sztywno.
+- Zweryfikowany: self-check realnych 5 plików `content/uslugi/*.md` —
+  **brak kolizji i ostrzeżeń** (raport `reports/dedup-fala-0.txt`,
+  zostawiony w repo jako realny, nie testowy wynik) — retroaktywne
+  potwierdzenie, że treść z punktu 4 nie ma problemu z powtarzalnością
+  mimo współdzielonych fragmentów prawnych (np. zdania o współpracy
+  z kancelariami). Na spreparowanym pliku ze sztucznie podmienionymi
+  słowami (kopia `obserwacja.md` z podmienionym rdzeniem „obserwacj-” na
+  „śledzeni-”) wykrył kolizję twardą na poziomie 78,1% i poprawnie
+  zatrzymał się z exit 1 — mechanizm progu twardego działa.
+- **Nie zrobione w tej sesji**: `scripts/check-placeholders.sh`
+  (wspomniany w sekcji 2.2, ale nienazwany jako osobny punkt w sekcji 16)
+  — zrobione ręcznie przez `grep -rn '{{LOREM'` przy każdym punkcie do tej
+  pory; sam skrypt to trywialny wrapper, ale zostawiony na później, żeby
+  nie rozszerzać zakresu punktu 7 poza to, co sekcja 16 nazywa wprost.
+
 ## Świadomie NIE zrobione / odłożone
 
 - **ACF Pro** — brak licencji klienta. Gdy dojdzie: zamiana pól textarea
@@ -253,7 +289,6 @@ Importer WP-CLI, idempotentny ✅
 
 ## Następne kroki wg kolejności z sekcji 16 CLAUDE.md
 
-7. `dedup-gate.py`
 8. Schema, sitemapy, linkowanie wewnętrzne, breadcrumbs
 9. Wydajność i Core Web Vitals
 10. Mapa 301 z baseline + test przekierowań — **zablokowane**: wymaga

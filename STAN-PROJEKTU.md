@@ -11,11 +11,11 @@ nadrzędna to zawsze `CLAUDE.md`.
 - Admin WP: `https://olech.ddev.site/wp-admin/` — login `admin` / hasło `admin123`
   (tylko lokalne DDEV, do zmiany).
 - WP-CLI dostępny przez `ddev wp ...` (lokalnie w tej sesji: `ddev exec wp ...`).
-- **Git: praca z punktu 9 (patrz niżej) nie jest jeszcze scommitowana.**
-  Nowe/zmienione ścieżki: `inc/wydajnosc.php`, `functions.php`,
-  `.gitignore` (dodane `wp-content/object-cache.php`). Punkty 1–8 są już
+- **Git: praca z punktu 11 (patrz niżej) nie jest jeszcze scommitowana.**
+  Nowa ścieżka: `scripts/indexation-report.py`. Punkty 1–9 są już
   scommitowane (`ccef682`, `a585196`, `f907a77`, `bc452dc`, `cb7dfaf`,
-  `ee083e7`).
+  `ee083e7`, `9415c07`). Punkty 10 i 12 pominięte w tej sesji — zablokowane
+  na braku dostępów, patrz niżej.
 - **Redis object cache działa lokalnie w tym DDEV** (`ddev get
   ddev/ddev-redis` + `wp plugin install redis-cache --activate` +
   `WP_REDIS_HOST=redis` w `wp-config.php` + `wp redis enable`) —
@@ -382,6 +382,49 @@ Wydajność i Core Web Vitals ✅
   dodany do `.gitignore` — brakowało tego wpisu, mogło przypadkiem trafić
   do repo przy następnym `git add -A`.
 
+## Zrobione (częściowo) — punkt 11 z sekcji 16 CLAUDE.md
+
+`scripts/indexation-report.py` ✅ (logika progów), ⚠️ (integracja z GSC API)
+
+- Implementuje dokładnie tabelę progów z sekcji 12.1: indeksacja
+  poprzedniej fali < 60% → STOP, 60–75% → publikuj, ale zmniejsz kolejną
+  falę do 50 stron, spadek wyświetleń strony głównej lub usług m/m > 20%
+  → STOP, wzrost „Discovered — currently not indexed" > 30% fali →
+  ostrzeżenie. Nic nie publikuje ani nie cofa samo z siebie — tylko
+  raportuje i ustawia exit code (0/1), zgodnie z „nie kontynuuj
+  automatycznie" z sekcji 12.1.
+- **Dwa tryby wejścia**: `--input plik.json` (dane już zebrane — ręczny
+  eksport z GSC albo zapisany wcześniejszy `--fetch`) oraz `--fetch`
+  (próba pobrania na żywo z GSC API — URL Inspection API dla statusu
+  indeksacji per URL, Search Analytics API dla wyświetleń m/m, surowe
+  wywołania REST przez `urllib`, bez zależności
+  `google-api-python-client`, spójnie z resztą skryptów w `scripts/`).
+- **Zweryfikowane w pełni**: tryb `--input` przetestowany na 5
+  syntetycznych scenariuszach (wszystkie progi z tabeli, każdy osobno) —
+  wszystkie zachowały się dokładnie zgodnie ze specyfikacją (właściwy
+  komunikat, właściwy exit code).
+- **Niezweryfikowane**: tryb `--fetch` (wywołania GSC API) — kod napisany
+  wg dokumentacji Search Console API, ale bez dostępu do prawdziwego konta
+  GSC (sekcja 17 CLAUDE.md: dostępy czekają na klienta) nie da się go
+  przetestować na żywo w tej sesji. Jasno oznaczone w kodzie i przy
+  uruchomieniu (`UWAGA: tryb --fetch jest niesprawdzony...`) — traktować
+  jako szkic do weryfikacji przy pierwszym realnym użyciu, nie jako
+  gotowe narzędzie.
+
+## Pominięte w tej sesji — punkty 10 i 12 (zablokowane)
+
+- **Punkt 10 — mapa 301 z baseline + test przekierowań**: wymaga
+  `seo/baseline/` (eksport GSC z 16 miesięcy, crawl starego
+  `olechpartners.com`, linki przychodzące — sekcja 13 CLAUDE.md), do
+  którego nie ma dostępu w tej sesji. Bez realnego eksportu nie da się
+  zbudować `seo/redirects.csv` bez zgadywania starych adresów URL, co
+  CLAUDE.md wprost zabrania (sekcja 6.2: „Nie zgaduj").
+- **Punkt 12 — deploy + GSC**: wymaga realnych dostępów (rejestrator
+  domeny, hosting, GBP, GSC — sekcja 17 CLAUDE.md), których nie ma w tej
+  sesji.
+- Oba czekają na dostępy od klienta — do zrobienia w osobnych sesjach, gdy
+  dostępy się pojawią.
+
 ## Świadomie NIE zrobione / odłożone
 
 - **ACF Pro** — brak licencji klienta. Gdy dojdzie: zamiana pól textarea
@@ -422,13 +465,19 @@ Wydajność i Core Web Vitals ✅
 
 ## Następne kroki wg kolejności z sekcji 16 CLAUDE.md
 
-10. Mapa 301 z baseline + test przekierowań — **zablokowane**: wymaga
-    `seo/baseline/` (eksport GSC 16 mies., crawl starego
-    olechpartners.com, sekcja 13), do którego nie mamy dostępu w tej sesji.
-11. `indexation-report.py` — da się zbudować jako narzędzie, ale bez
-    realnego dostępu do GSC API nie da się przetestować na żywo.
-12. Deploy + GSC — **zablokowane**: wymaga realnych dostępów (hosting,
-    domena, GSC) z sekcji 17.
+Wszystkie 12 punktów z sekcji 16 zostały odwiedzone w tej sesji:
+**punkty 1–9 i 11 zrobione i scommitowane** (11 częściowo — logika progów
+gotowa i przetestowana, integracja z GSC API napisana, ale niesprawdzona).
+**Punkty 10 i 12 pozostają zablokowane** na braku dostępów od klienta
+(baseline starego serwisu + GSC, i dostępy hostingowe — sekcja 17).
+
+Gdy dostępy się pojawią:
+10. Mapa 301 z baseline + test przekierowań.
+12. Deploy + GSC.
+
+Do tego czasu kolejna praca to albo wypełnianie danych etapami (miasta.csv
+fala po fali, treści poradnika, dane firmowe/współpracownicy od klienta —
+patrz sekcja 17), albo drobne poprawki/rozszerzenia istniejących punktów.
 
 Pamiętać: „Osobna sesja na każdy punkt. Nie łącz.” (sekcja 16 CLAUDE.md).
 

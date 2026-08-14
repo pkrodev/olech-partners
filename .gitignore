@@ -1,10 +1,10 @@
 wp-admin/
 wp-includes/
 wp-*.php
-xmlrpc.php
-index.php
-license.txt
-readme.html
+/xmlrpc.php
+/index.php
+/license.txt
+/readme.html
 wp-content/uploads/
 wp-content/upgrade/
 wp-content/cache/

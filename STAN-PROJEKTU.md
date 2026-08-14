@@ -11,11 +11,18 @@ nadrzędna to zawsze `CLAUDE.md`.
 - Admin WP: `https://olech.ddev.site/wp-admin/` — login `admin` / hasło `admin123`
   (tylko lokalne DDEV, do zmiany).
 - WP-CLI dostępny przez `ddev wp ...` (lokalnie w tej sesji: `ddev exec wp ...`).
-- **Git: praca z punktu 11 (patrz niżej) nie jest jeszcze scommitowana.**
-  Nowa ścieżka: `scripts/indexation-report.py`. Punkty 1–9 są już
-  scommitowane (`ccef682`, `a585196`, `f907a77`, `bc452dc`, `cb7dfaf`,
-  `ee083e7`, `9415c07`). Punkty 10 i 12 pominięte w tej sesji — zablokowane
-  na braku dostępów, patrz niżej.
+- **Git: wszystko scommitowane i wypchnięte na `origin/main`
+  (GitHub: `pkrodev/olech-partners`).** Punkty 1–9 i 11 z sekcji 16:
+  `ccef682`, `a585196`, `f907a77`, `bc452dc`, `cb7dfaf`, `ee083e7`,
+  `9415c07`, `cf65c9c`. Sesja brandingu/redesignu (poza numeracją sekcji
+  16, patrz niżej): `013c77d` (dane od klienta, cena wariografu,
+  windykacja), `c6b88b2` (branding, redesign, obrazy). Punkty 10 i 12
+  pominięte — zablokowane na braku dostępów, patrz niżej.
+- **Foldery `/logo/` i `/od klienta/` są w `.gitignore`, świadomie.**
+  Zawierają surowe materiały źródłowe (logo klienta, notatka z danymi
+  firmowymi) — dane z nich są już wyekstrahowane do `CLAUDE.md` (sekcja 17)
+  i do `wp-content/themes/olech/assets/` (przetworzone logo). Foldery
+  zostają lokalnie na tej maszynie, nie w historii gita.
 - **Redis object cache działa lokalnie w tym DDEV** (`ddev get
   ddev/ddev-redis` + `wp plugin install redis-cache --activate` +
   `WP_REDIS_HOST=redis` w `wp-config.php` + `wp redis enable`) —
@@ -410,6 +417,205 @@ Wydajność i Core Web Vitals ✅
   uruchomieniu (`UWAGA: tryb --fetch jest niesprawdzony...`) — traktować
   jako szkic do weryfikacji przy pierwszym realnym użyciu, nie jako
   gotowe narzędzie.
+
+## Branding i redesign strony głównej (poza numeracją sekcji 16, sesja 2026-08-14)
+
+Na wyraźną prośbę użytkownika — poza kolejnością 12 punktów z sekcji 16,
+osobna praca równoległa po zakończeniu punktu 11.
+
+**System wizualny** (`theme.json`, `style.css`):
+- Paleta czarny/złoto/biały wg starej strony klienta i loga (`/logo/`,
+  niewersjonowane). Dokładny odcień złota wyciągnięty programowo z loga
+  (próbkowanie pikseli przez GD): `#e29126`–`#eaab2a`, użyty jako
+  `--wp--preset--color--zloto`/`zloto-jasne`.
+- Fonty self-hosted (sekcja 3 CLAUDE.md — zakaz CDN): Playfair Display
+  (nagłówki) + Inter (tekst/UI), pobrane jako pliki zmienne (variable
+  fonts, cały zakres wag w 1 pliku na podzbiór latin/latin-ext) z Google
+  Fonts, self-hosted w `assets/fonts/`, `LICENSE.txt` z informacją o OFL.
+- Logo: dostarczony PNG miał białe tło (nie przezroczyste) — wygenerowana
+  programowo (GD, próg + płynne przejście na krawędziach) przezroczysta
+  wersja, ustawiona jako natywne WP Custom Logo (`add_theme_support`,
+  `set_theme_mod('custom_logo', ...)`) — edytowalne później w wp-admin
+  bez zmiany kodu.
+- **Prawdziwy bug znaleziony i naprawiony**: `settings.typography.fontSizes`
+  w `theme.json` był po cichu nadpisywany przez domyślne presety WP
+  (te same slugi small/medium/large/x-large co WP core) — naprawa:
+  `"defaultFontSizes": false`. Bez tego niestandardowa typografia w ogóle
+  nie działała, mimo poprawnego JSON-a.
+- **Redis (punkt 9) trzymał stary cache `wp_global_styles`** — po każdej
+  większej zmianie `theme.json` w tej sesji uruchamiano `wp cache flush`.
+
+**Poprawki zgłoszonych błędów wizualnych**:
+- Siatka usług „rozjechana"/niewycentrowana → brak
+  `settings.layout.contentSize`/`wideSize` w `theme.json` (bez tego
+  `.is-layout-constrained` nie ma zdefiniowanego max-width). Dodano
+  `contentSize: 1100px`, `wideSize: 1400px`.
+- Nagłówek za blisko lewej krawędzi → `.olech-header` nie miał
+  `padding-inline`/`max-width`; dodane.
+- Litery menu „zbyt szare" (hover ok) → globalny styl linku z `theme.json`
+  (`a:where(:not(.wp-element-button))`) wygrywał mimo niskiej
+  specyficzności — naprawa przez precyzyjniejszy selektor +
+  `!important` (świadomie, bije generowane style rdzenia WP).
+- Menu ukryte na samej górze strony głównej, pojawia się po scrollu →
+  `assets/js/header-scroll.js` (toggle klasy `.olech-scrolled` na
+  `<body>`, tylko `is_front_page()`), `position:fixed` +
+  `transform:translateY(-100%)` w CSS, tylko dla `body.home`.
+
+**Realne dane od klienta** (plik `od klienta/o firmie.txt`, niewersjonowany
+— dane wyekstrahowane do `CLAUDE.md` sekcja 17 i do ustawień firmy):
+- `inc/ustawienia-firmy.php`: dodane pola `krs`/`nip`/`regon`/`adres_siedziby`
+  (adres REJESTROWY w Warszawie — inny niż operacyjny Radom z sekcji 10,
+  nieużywany w schema `LocalBusiness`). Wartości ustawione przez WP-CLI:
+  MSWiA RD-13/2026, licencja 0004178, KRS 0001096988, NIP 9482645495,
+  REGON 528198884.
+- Nowy blok `blocks/stopka-prawna/` — dynamicznie czyta dane firmy do
+  stopki (checklist pkt 23), zastąpił statyczny `{{LOREM}}`.
+- Treść i FAQ wariografu zaktualizowane o realne fakty: Daniel Olech,
+  uprawnienia z Rosji, doszkalanie PSP + American Polygraph Association,
+  sprzęt certyfikowany (bez modelu — nadal `{{LOREM}}`), badanie 2–4h,
+  umawianie telefoniczne.
+- **Odrzucone jako sprzeczne z sekcją 2.1** (klient/użytkownik
+  zaproponował, nie wykonane): fabrykacja case studies, kopiowanie FAQ
+  z konkurencji wprost. Wyjaśnione użytkownikowi wprost w rozmowie.
+
+**Decyzja biznesowa 2026-08-14 (usunięcie ceny wariografu)**:
+- Po rozmowie użytkownika z klientem: cena wariografu (2000 zł) **nie**
+  jest już publikowana nigdzie na stronie (wcześniej: wyjątek w sekcji 9
+  CLAUDE.md pozwalający ją pokazywać wprost — sekcja 9 zaktualizowana,
+  wyjątek usunięty).
+- `inc/acf-pola.php`: nowa wartość pola `jednostka_ceny` = `ukryta`
+  (cena znana wewnętrznie, celowo nieujawniana — odróżnione od pustych
+  `cena_od`/`cena_do`, co znaczy „jeszcze nieznana"). `blocks/cena-uslugi/render.php`
+  renderuje wtedy CTA kontaktowe zamiast `{{LOREM}}` (to nie brakujące
+  dane, tylko świadoma decyzja niepublikowania).
+- `data/uslugi.csv`, treść, FAQ, front page **i `single-lokalizacja.html`**
+  (druga, osobna zahardkodowana wzmianka znaleziona przy końcowym audycie
+  `grep -rn "2000 zł"` po całym repo) zaktualizowane — zero wzmianek
+  „2000 zł" na całej stronie, zweryfikowane end-to-end na testowej
+  lokalizacji (posprzątanej).
+
+**Windykacja — nowa, 6. usługa** (decyzja: pełny zakres, nie wzmianka):
+- `content/uslugi/windykacja.md` (1177 słów), `data/faq/usluga-windykacja.json`
+  (6 pytań), wiersz w `data/uslugi.csv`, nowa kategoria „Sprawy finansowe”.
+- Ramowanie prawne: **windykacja polubowna, nie egzekucja komornicza** —
+  ustalanie faktów (adres, majątek dłużnika) i negocjacje, nie groźby ani
+  nielegalny nacisk; brak obietnicy odzyskania długu (sekcja 2.1 — zakaz
+  gwarantowania wyniku).
+- Cross-linki z `obserwacja`/`ustalenie-miejsca-pobytu`/`wywiad-personalny`
+  (naturalne połączenie tematyczne).
+- `dedup-gate.py` przeszedł czysto na nowej treści i na całym korpusie
+  6 usług (raport `reports/dedup-fala-0.txt`).
+
+**Sekcja usług: pozioma siatka → pionowa lista ze zdjęciami**:
+- `blocks/uslugi-karty/render.php` przepisany — układ pionowy (zdjęcie +
+  tytuł + dłuższy opis + „Czytaj więcej”, cały wiersz klikalny). Zdjęcie
+  z natywnego WP featured image (`has_post_thumbnail`/`get_the_post_thumbnail`),
+  gracefully pomija zdjęcie, jeśli go brak (nie `{{LOREM}}` — brak zdjęcia
+  to nie brakujący fakt merytoryczny).
+- Opisy usług (`data/uslugi.csv` kolumna `excerpt`) rozszerzone z 12–19 do
+  ~25–30 słów, 2 zdania zamiast jednego.
+
+**Zdjęcia stockowe** (7: hero + po 1 na usługę) — `assets/img/`,
+`assets/img/uslugi/`, `CREDITS.txt` z pełną atrybucją:
+- Źródło: Openverse (agregator CC — Flickr/Wikimedia), filtrowane pod
+  `license_type=commercial,modification`. Licencje CC BY / CC BY-SA / CC0
+  — atrybucja w `CREDITS.txt`.
+- **Odrzucone po wizualnej weryfikacji** (nieodpowiednie): historyczne
+  zdjęcie z amerykańskim plakatem wyborczym, amatorska selfie z lupą,
+  dziecko z lornetką, zdjęcie z widocznym watermarkiem, ekstremalny
+  makro-fingerprint w różowym odcieniu niepasującym do palety.
+- Finalny dobór celowo unika dosłownych, „tandetnych” zdjęć „detektyw z
+  lupą” — stawia na detale/przedmioty (kompas na mapie, płytka
+  elektroniczna, maszyna do pisania, umowa z piórem) w tonacji ciemno-
+  złotej, spójnej z paletą. Wyjątek: zdjęcie do wariografu to faktyczny,
+  ale wizualnie przestarzały aparat — jedyny sensowny kandydat w wolnych
+  zasobach; do podmiany, gdy klient dostarczy zdjęcia realnego sprzętu
+  (sekcja 17).
+- Wszystkie wgrane do biblioteki mediów WP → automatyczna konwersja WebP
+  (mechanizm z punktu 9) potwierdzona dla każdego pliku. Ustawione jako
+  `_thumbnail_id` (featured image) odpowiednich wpisów `usluga`. Duże
+  zdjęcie (6000×4500, windykacja) przeskalowane do 2400px przed
+  uploadem.
+- Zdjęcie hero (Warszawa nocą) osobno: skonwertowane do WebP i trzymane
+  jako statyczny plik motywu (`assets/img/hero-warszawa.webp`,
+  referencja względna w `style.css`) — nie w bibliotece mediów, bo to
+  stały element designu, nie treść edytowalna przez klienta.
+
+**Nowa sekcja na stronie głównej „Dlaczego warto nam zaufać”** — 4 punkty
+oparte wyłącznie na realnych, zatwierdzonych przez klienta sformułowaniach
+z `od klienta/o firmie.txt` (zespół w całej Polsce, start w 24h, zasięg
+UE/kraje wschodnie, poufność) — zero fabrykowanych liczb/lat doświadczenia.
+
+**Poprawiona przy okazji nieścisłość sprzed tej sesji**: wzorzec
+`patterns/jak-pracujemy.php` (używany na stronach miast, punkt 3) zakładał
+„Bezpłatna konsultacja” — sekcja 17 CLAUDE.md miała to jako otwarte
+pytanie („bezpłatna czy płatna”). Poprawione na neutralne sformułowanie
+zgodne z notatką klienta (konsultacja telefoniczna/mailowa/spotkanie).
+
+**Zweryfikowane end-to-end**: pełna regresja HTTP 200 na wszystkich typach
+stron, `dedup-gate.py` czysto, `check-internal-links.py` bez regresji
+(te same, znane braki poradnik/lokalizacje co przed sesją), zero błędów
+PHP w logach DDEV, WebP potwierdzony dla wszystkich 8 nowych obrazów
+(logo + 7 zdjęć).
+
+**Nie zrobione / brak w tym środowisku**: brak przeglądarki/Chrome
+headless/`chromium-cli` do zrobienia realnego zrzutu ekranu — weryfikacja
+była przez dokładny przegląd wygenerowanego HTML/CSS (klasy, selektory,
+zmienne CSS, kontrast kolorów liczony ręcznie), nie przez faktyczne
+renderowanie. Użytkownik ocenia wizualnie sam w przeglądarce.
+
+### Druga tura poprawek po pierwszym przeglądzie użytkownika (ten sam dzień)
+
+- **Layout „wąski"/boxed → naprzemienne pasy pełnej szerokości.**
+  Przyczyna: sekcje były tylko `layout:constrained`, nigdy `align:full` —
+  cała strona wyglądała jak jedna wąska kolumna. Naprawa: każda sekcja
+  strony głównej to teraz zewnętrzna grupa `align:full` (nowe klasy
+  `.olech-band`, `.olech-band--kremowy/bialy/czarny`) z WŁASNYM
+  `layout:constrained` w środku — tło na całą szerokość ekranu, treść
+  wyśrodkowana z powrotem do czytelnej szerokości. Naprzemienne tła:
+  hero (ciemne, zdjęcie) → pasek zaufania (kremowy) → „Dlaczego warto"
+  (biały) → usługi (kremowy, dodatkowo poszerzone do `wideSize` 1400px
+  zamiast 1100px) → wariograf (czarny) → formularz (biały, karta
+  wycentrowana na 44rem).
+- **Biały pasek nad hero.** Przyczyna: brak resetu domyślnego marginesu
+  `<body>` (przeglądarki dodają ~8px). Dodane `body { margin: 0; }`.
+- **Złoty tekst na złotym tle przycisku (wariograf).** Przyczyna:
+  `.olech-wariograf a` (2 klasy specyficzności) wygrywał nad
+  `.olech-btn--zloto` (1 klasa) mimo że przycisk MIAŁ własny, poprawny
+  kolor tekstu. Naprawa: `.olech-wariograf a:not(.olech-btn)`.
+- **Zdjęcia wariografu i wywiadu personalnego wymienione** — zgłoszone
+  jako „przestarzały sprzęt / słabo wyglądowo". Nowy dobór: EKG z piórem
+  (abstrakcyjne nawiązanie do „wielu zapisów" poligrafu, bez pokazywania
+  realnego, przestarzałego urządzenia) i notatnik+pióro+okulary (czyste,
+  nowoczesne zdjęcie produktowe zamiast starej maszyny do pisania).
+  Stare załączniki usunięte z biblioteki mediów, `CREDITS.txt`
+  zaktualizowany.
+- Zweryfikowane: pełna regresja HTTP 200, zero błędów PHP,
+  `dedup-gate.py` czysto (treść usług niezmieniona w tej turze).
+
+### Trzecia tura — biały pasek nad hero nadal widoczny po drugiej turze
+
+Pierwsza naprawa (`body { margin: 0 }`) nie usunęła problemu — zły
+zdiagnozowany mechanizm. **Prawdziwa przyczyna**: WP core dokłada domyślny
+odstęp między blokami wewnątrz `layout:constrained` —
+`:root :where(.is-layout-constrained) > *{margin-block-start: 24px}`,
+wyjątek tylko dla `:first-child`. Nasze pasy pełnej szerokości
+(`.olech-band`, `.olech-hero`) są bezpośrednimi dziećmi `<main>`, więc
+każdy z nich (nie tylko pierwszy) i tak dostawał 24px odstępu, w którym
+prześwitywało białe tło strony — widoczne jako pasek nad hero i cienkie
+linie między kolejnymi sekcjami. Naprawa: `.olech-hero, .olech-band {
+margin-block: 0 !important; }` — odstępy wewnątrz sekcji dają własne
+`padding-block`, nie zewnętrzny margines.
+
+Dodatkowo: wersja w nagłówku `style.css` podbita `0.2.0 → 0.3.0` (cache
+przeglądarki mógł trzymać starą wersję pliku pod tym samym URL —
+`wp_enqueue_style` dokleja `?ver=` z nagłówka motywu, więc bez zmiany
+numeru URL się nie zmieniał mimo edycji treści pliku na serwerze).
+
+**Do zapamiętania na przyszłość**: przy jakiejkolwiek zmianie w
+`style.css` w kolejnych sesjach — podbijać `Version` w nagłówku pliku,
+inaczej przeglądarka użytkownika może nie zobaczyć zmian mimo poprawnego
+kodu po stronie serwera.
 
 ## Pominięte w tej sesji — punkty 10 i 12 (zablokowane)
 

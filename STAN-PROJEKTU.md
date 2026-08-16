@@ -21,8 +21,11 @@ nadrzędna to zawsze `CLAUDE.md`.
   usług, CTA telefon), `83d9a18` (2026-08-16, ciąg dalszy tej samej
   sesji — hierarchia nagłówków, przebudowa "Dlaczego warto nam zaufać",
   wyrównanie przycisków CTA i wyśrodkowanie cyfr zmierzone w
-  przeglądarce, patrz sekcja niżej). Punkty 10 i 12 pominięte —
-  zablokowane na braku dostępów, patrz niżej.
+  przeglądarce), `2f10e58` (2026-08-16, ciąg dalszy — redesign podstron
+  usług: hero ze zdjęciem na każdej usłudze i na `/uslugi/`, pełnoszerokie
+  menu, chowanie menu do scrolla poza stroną główną, patrz sekcja
+  niżej). Punkty 10 i 12 pominięte — zablokowane na braku dostępów,
+  patrz niżej.
 - **`wp-config.php` jest w `.gitignore` (świadomie, dane środowiskowe) —
   po KAŻDYM `ddev start`/regeneracji tego pliku trzeba ręcznie dopisać
   `WP_REDIS_HOST`/`WP_REDIS_PORT`** (patrz punkt niżej o Redis), inaczej
@@ -846,6 +849,75 @@ błędne — patrz niżej, dlaczego i co finalnie zadziałało.**
 Zweryfikowane end-to-end: HTTP 200 wszędzie, zero błędów PHP, zero
 nowych `{{LOREM}}`, `functions.php` bez pozostałości debugowych
 (zweryfikowane `git diff` puste przed commitem tej rundy).
+
+## Redesign podstron usług (2026-08-16, ta sama sesja, commit `2f10e58`)
+
+Użytkownik poprosił o rozszerzenie "nowoczesnego stylu" strony głównej
+na `/uslugi/` i wszystkie 6 pojedynczych podstron usług.
+
+- **Nowy blok `olech/hero-usluga`** (`blocks/hero-usluga/`) — duży,
+  ciemny hero na górze KAŻDEJ podstrony usługi: zdjęcie usługi
+  (featured image) w tle, gradient, Ken Burns, fade-in tekstu — dokładnie
+  ten sam język wizualny co `.olech-hero` na stronie głównej, ale tło
+  jest DYNAMICZNE per usługa (custom property `--olech-usluga-hero-bg`
+  wstrzyknięta inline przez PHP, mechanizm gradientu/animacji
+  zdefiniowany raz w CSS). Eyebrow = nazwa kategorii (`kategoria_uslugi`),
+  lead = excerpt. Breadcrumbs przeniesione DO ŚRODKA hero (stonowany,
+  jasny wariant) zamiast osobnego białego paska nad nim.
+- **Cała reszta treści pojedynczej usługi** (Problem klienta, Jak
+  działamy, Przebieg współpracy, cena, FAQ, opinie, powiązane usługi/
+  poradniki/lokalizacje) owinięta w nowy kontener `.olech-usluga-tresc`:
+  czytelna szerokość (46rem), wycentrowane nagłówki sekcji ze złotą
+  kreską pod spodem, akapity zostają wyrównane do lewej (długie linie
+  wyśrodkowanego tekstu źle się czyta), animacje wjazdu przy scrollu.
+  Cena jako wyróżniona karta z gold accent border, FAQ z animowanym "+"
+  zamiast domyślnej strzałki `<details>`, powiązane usługi/poradniki/
+  lokalizacje jako klikalne "chipy" (pigułki z obwódką, wypełniają się
+  na złoto na hover) zamiast gołej listy linków.
+- **`/uslugi/`** — usunięty zdublowany nagłówek "Usługi" (mniejszy H2)
+  tuż pod większym H1 "Usługi detektywistyczne" (blok `uslugi-karty`
+  teraz warunkowo pomija własny nagłówek, gdy `is_post_type_archive('usluga')`
+  — na stronie głównej nadal go pokazuje, tam jest jedynym nagłówkiem tej
+  sekcji). Dodany własny hero (zdjęcie `sylwetka-teczka.webp`, już
+  używane gdzie indziej na stronie — reuse celowy, nie znaleziono nic
+  lepszego w wyszukiwarce Openverse mimo kilkunastu zapytań) + tytuł +
+  CTA. Dodany formularz kontaktowy na dole strony (wcześniej GO TAM NIE
+  BYŁO mimo że przycisk "Zostaw zgłoszenie" linkował do `#formularz` —
+  martwy link, teraz naprawiony przy okazji).
+- **Prawdziwy bug: menu górne nie było pełnej szerokości** — `max-width:
+  1400px` i `margin-inline: auto` siedziały bezpośrednio na `.olech-header`
+  (element z tłem), więc na ekranach szerszych niż 1400px samo czarne
+  tło kończyło się razem z treścią, zostawiając białe pasy po bokach
+  (potwierdzone wizualnie na 1920px — realny, niezauważony wcześniej
+  bug, bo wcześniejsze testy tej sesji robione głównie na 1600px, gdzie
+  różnica była mniej rzucająca się w oczy). Naprawa: rozdzielone na
+  `.olech-header` (tło, pełna szerokość, bez max-width) +
+  `.olech-header__wrap` (nowy wewnętrzny kontener, max-width 1400px,
+  wyśrodkowany) — ten sam dwuwarstwowy wzorzec co `.olech-band` już
+  używany wszędzie indziej.
+- **Chowanie menu do przewinięcia rozszerzone poza stronę główną** — nowa
+  funkcja `olech_ma_hero()` (`functions.php`) zwraca true dla
+  `is_front_page() || is_singular('usluga') || is_post_type_archive('usluga')`,
+  dokłada klasę `olech-ma-hero` przez filtr `body_class` i warunkuje
+  enqueue `header-scroll.js`. CSS zmieniony z `body.home .olech-header`
+  na `body.olech-ma-hero .olech-header`. Strony BEZ hero (kontakt,
+  poradnik, dziękujemy) świadomie pominięte — tam chowanie nagłówka
+  wyglądałoby jak jego brak na starcie, bo nie ma ciemnego tła hero pod
+  spodem.
+- **Zdjęcie w hero "Badanie wariografem" wyglądało źle** — zdiagnozowane
+  (nie zgadywane): oryginalne zdjęcie EKG ma dwa paski fali z pustym,
+  jasnym odstępem DOKŁADNIE na środku (zweryfikowane oglądając plik
+  źródłowy wprost). W bardzo szerokim, niskim kadrze hero domyślna
+  pozycja tła "center" pokazywała właśnie ten pusty pasek, nie falę.
+  Naprawa: mapa `slug → pozycja tła` w `hero-usluga/render.php`
+  (na razie tylko `badanie-wariografem => 'center 78%'`), wstrzykiwana
+  jako druga custom property `--olech-usluga-hero-pos`. To samo zdjęcie
+  zostało — nie trzeba było szukać nowego, wystarczyło poprawić kadr.
+
+Zweryfikowane end-to-end: HTTP 200 na wszystkich 6 usługach + hubie +
+stronie głównej + kontakcie, zero błędów PHP, zero nowych `{{LOREM}}`,
+`check-internal-links.py` bez regresji, sprawdzone na 1920px (menu na
+pełną szerokość) i mobile (390–500px).
 
 ## Pominięte w tej sesji — punkty 10 i 12 (zablokowane)
 

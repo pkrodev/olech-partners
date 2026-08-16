@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "olech/hero-usluga",
+	"title": "Hero usługi",
+	"category": "widgets",
+	"icon": "format-image",
+	"description": "Duży hero na stronie pojedynczej usługi — zdjęcie usługi w tle, tytuł, lead, CTA (sesja 2026-08-16, ten sam styl co hero strony głównej).",
+	"textdomain": "olech"
+}

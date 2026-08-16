@@ -58,7 +58,8 @@ main.wp-block-group {
 
 .olech-hero,
 .olech-band,
-.olech-cien {
+.olech-cien,
+.olech-usluga-hero {
 	margin-block: 0 !important;
 }
 
@@ -104,28 +105,49 @@ main.wp-block-group {
 /* ---------- Nagłówek ---------- */
 
 .olech-header {
+	/* Tło NA CAŁĄ szerokość — wcześniej max-width/margin-inline siedziały
+	   bezpośrednio na .olech-header, więc na szerokich ekranach (>1400px)
+	   samo czarne tło kończyło się razem z treścią, zostawiając białe pasy
+	   po bokach (realny bug, zauważony przy 1920px — sesja 2026-08-16).
+	   Teraz .olech-header to pełna szerokość + tło, a .olech-header__wrap
+	   niżej centruje samą zawartość — ten sam wzorzec co .olech-band. */
 	background: var(--wp--preset--color--czarny);
-	padding-block: 1rem;
-	padding-inline: clamp(1.25rem, 4vw, 3rem);
-	max-width: var(--wp--style--global--wide-size, 1400px);
-	margin-inline: auto;
+	/* Delikatna złota linia + cień pod paskiem — na podstronach (statyczny,
+	   zawsze widoczny nagłówek, bez tła-hero pod spodem) sam płaski czarny
+	   pasek wyglądał ubogo w porównaniu do reszty odświeżonej strony
+	   (uwaga użytkownika z sesji 2026-08-16). Na stronach z hero te same
+	   reguły obowiązują dopiero po przewinięciu (kiedy nagłówek się pokazuje). */
+	border-bottom: 1px solid rgba(185, 135, 28, 0.35);
+	box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
 }
 
-/* Na stronie głównej: nagłówek niewidoczny na samej górze (na tle hero),
-   pokazuje się dopiero po przewinięciu — JS przełącza klasę na <body>
-   (assets/js/header-scroll.js, wpięty tylko na front-page). Na pozostałych
-   stronach nagłówek zachowuje się normalnie (statycznie, zawsze widoczny). */
-body.home .olech-header {
+.olech-header__wrap {
+	align-items: center;
+	max-width: var(--wp--style--global--wide-size, 1400px);
+	margin-inline: auto;
+	padding-block: 1.1rem;
+	padding-inline: clamp(1.25rem, 4vw, 3rem);
+}
+
+/* Na stronach z hero (strona główna, pojedyncza usługa, hub /uslugi/):
+   nagłówek niewidoczny na samej górze (na tle hero), pokazuje się dopiero
+   po przewinięciu — JS przełącza klasę na <body>
+   (assets/js/header-scroll.js). Klasa .olech-ma-hero dokładana przez PHP
+   (functions.php, body_class) na każdej stronie z sekcją hero — nie tylko
+   na stronie głównej (rozszerzone w sesji 2026-08-16, wcześniej działało
+   tylko dla body.home). Strony bez hero (kontakt, poradnik...) zachowują
+   nagłówek statyczny, zawsze widoczny — chowanie go tam wyglądałoby jak
+   brak nagłówka na starcie. */
+body.olech-ma-hero .olech-header {
 	position: fixed;
 	inset-inline: 0;
 	top: 0;
 	z-index: 60;
 	transform: translateY(-100%);
 	transition: transform 0.25s ease;
-	max-width: none;
 }
 
-body.home.olech-scrolled .olech-header {
+body.olech-ma-hero.olech-scrolled .olech-header {
 	transform: translateY(0);
 }
 
@@ -140,6 +162,7 @@ body.home.olech-scrolled .olech-header {
    wprost niż liczyć na kolejność ładowania arkuszy. */
 .olech-header .wp-block-navigation a,
 .olech-header .wp-block-navigation .wp-block-navigation-item__content {
+	position: relative;
 	color: var(--wp--preset--color--tekst-jasny) !important;
 	text-decoration: none;
 	font-weight: 600;
@@ -149,6 +172,24 @@ body.home.olech-scrolled .olech-header {
 .olech-header .wp-block-navigation a:hover,
 .olech-header .wp-block-navigation .wp-block-navigation-item__content:hover {
 	color: var(--wp--preset--color--zloto-jasne) !important;
+}
+
+/* Rosnąca złota kreska pod linkiem na hover — ten sam motyw co tytuły
+   usług, punkty "Dlaczego warto" itd., żeby menu nie było jedynym
+   nieanimowanym elementem strony. */
+.olech-header .wp-block-navigation-item__content::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: -4px;
+	height: 1px;
+	width: 0;
+	background: var(--wp--preset--color--zloto-jasne);
+	transition: width 0.25s ease;
+}
+
+.olech-header .wp-block-navigation-item__content:hover::after {
+	width: 100%;
 }
 
 .olech-header__prawa {
@@ -272,6 +313,116 @@ body.home.olech-scrolled .olech-header {
 	margin-inline: auto;
 	font-size: var(--wp--preset--font-size--large);
 	color: var(--wp--preset--color--tekst-jasny);
+}
+
+/* ---------- Hero pojedynczej usługi ----------
+   Ten sam język wizualny co .olech-hero (gradient, Ken Burns, fade-in),
+   ale tło jest DYNAMICZNE per usługa — obrazek wstrzyknięty inline jako
+   custom property `--olech-usluga-hero-bg` (blocks/hero-usluga/render.php),
+   z fallbackiem na sam gradient (bez url), gdyby usługa nie miała
+   wyróżnionego obrazka. Osobna klasa, nie .olech-hero wprost, żeby nie
+   mieszać z rzeczami specyficznymi dla strony głównej (logo, header-scroll.js). */
+
+.olech-usluga-hero {
+	position: relative;
+	overflow: hidden;
+	color: var(--wp--preset--color--tekst-jasny);
+	padding-block: 5rem 3.5rem;
+	padding-inline: clamp(1.25rem, 4vw, 3rem);
+	text-align: center;
+}
+
+.olech-usluga-hero::before {
+	content: "";
+	position: absolute;
+	inset: -2%;
+	background:
+		linear-gradient(180deg, rgba(20, 17, 13, 0.82) 0%, rgba(20, 17, 13, 0.92) 65%, var(--wp--preset--color--czarny) 100%),
+		var(--olech-usluga-hero-bg, none) var(--olech-usluga-hero-pos, center) / cover no-repeat,
+		var(--wp--preset--color--czarny-2);
+	animation: olech-kenburns 26s ease-in-out infinite alternate;
+	z-index: 0;
+}
+
+.olech-usluga-hero > * {
+	position: relative;
+	z-index: 1;
+}
+
+.olech-usluga-hero__eyebrow,
+.olech-usluga-hero__tytul,
+.olech-usluga-hero__lead,
+.olech-usluga-hero .olech-cta-row {
+	animation: olech-fade-up 0.9s ease both;
+}
+
+.olech-usluga-hero__eyebrow { animation-delay: 0.1s; }
+.olech-usluga-hero__tytul { animation-delay: 0.22s; }
+.olech-usluga-hero__lead { animation-delay: 0.34s; }
+.olech-usluga-hero .olech-cta-row { animation-delay: 0.46s; }
+
+@media (prefers-reduced-motion: reduce) {
+	.olech-usluga-hero::before { animation: none; }
+	.olech-usluga-hero__eyebrow,
+	.olech-usluga-hero__tytul,
+	.olech-usluga-hero__lead,
+	.olech-usluga-hero .olech-cta-row {
+		animation: none;
+	}
+}
+
+/* Breadcrumbs wewnątrz ciemnego hero (zamiast osobnego, białego paska nad
+   nim — mniej "szwów" wizualnych) — jaśniejszy, stonowany wariant tych
+   samych, współdzielonych ze wszystkich innych szablonów breadcrumbs. */
+.olech-usluga-hero .olech-breadcrumbs {
+	padding-block: 0 1.5rem;
+}
+
+.olech-usluga-hero .olech-breadcrumbs ol {
+	justify-content: center;
+	color: rgba(237, 230, 214, 0.65);
+}
+
+.olech-usluga-hero .olech-breadcrumbs a {
+	color: rgba(237, 230, 214, 0.85);
+	text-decoration-color: rgba(237, 230, 214, 0.35);
+}
+
+.olech-usluga-hero .olech-breadcrumbs a:hover {
+	color: var(--wp--preset--color--zloto-jasne);
+}
+
+.olech-usluga-hero .olech-breadcrumbs li:not(:last-child)::after {
+	color: rgba(237, 230, 214, 0.4);
+}
+
+.olech-usluga-hero__eyebrow {
+	color: var(--wp--preset--color--zloto-jasne);
+	text-transform: uppercase;
+	letter-spacing: 0.15em;
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 600;
+	margin: 0 0 0.6rem;
+}
+
+.olech-usluga-hero__tytul {
+	color: var(--wp--preset--color--bialy);
+	font-family: var(--wp--preset--font-family--playfair-display);
+	font-weight: 700;
+	font-size: var(--wp--preset--font-size--xx-large);
+	line-height: 1.15;
+	margin: 0 0 1rem;
+}
+
+.olech-usluga-hero__lead {
+	max-width: 58ch;
+	margin: 0 auto;
+	font-size: var(--wp--preset--font-size--large);
+	color: var(--wp--preset--color--tekst-jasny);
+}
+
+.olech-usluga-hero .olech-cta-row {
+	margin-block-start: 1.75rem;
 }
 
 .olech-cta-row {
@@ -470,6 +621,12 @@ body.home.olech-scrolled .olech-header {
 	text-align: center;
 	max-width: var(--wp--style--global--wide-size, 1400px) !important;
 	margin-inline: auto;
+}
+
+/* ---------- Hub /uslugi/ ---------- */
+
+.olech-archiwum-uslug__lista {
+	padding-block-end: 4.5rem;
 }
 
 .olech-uslugi h2 {
@@ -1049,19 +1206,147 @@ body.home.olech-scrolled .olech-header {
 }
 
 .olech-faq__pozycja summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
 	cursor: pointer;
 	font-weight: 600;
 	color: var(--wp--preset--color--czarny);
+	list-style: none;
+	transition: color 0.2s ease;
+}
+
+.olech-faq__pozycja summary::-webkit-details-marker {
+	display: none;
+}
+
+.olech-faq__pozycja summary::after {
+	content: "+";
+	flex-shrink: 0;
+	color: var(--wp--preset--color--zloto);
+	font-size: 1.3em;
+	line-height: 1;
+	transition: transform 0.25s ease;
+}
+
+.olech-faq__pozycja:hover summary {
+	color: var(--wp--preset--color--zloto);
+}
+
+.olech-faq__pozycja[open] summary::after {
+	transform: rotate(135deg);
+}
+
+.olech-faq__pozycja > div {
+	padding-top: 0.6rem;
 }
 
 .olech-lokalizacje-przyklad ul,
-.olech-poradniki-przyklad ul {
+.olech-poradniki-przyklad ul,
+.olech-powiazane ul {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.75rem 1.5rem;
+	gap: 0.75rem 1rem;
 	list-style: none;
 	margin: 0;
 	padding: 0;
+}
+
+.olech-lokalizacje-przyklad ul a,
+.olech-poradniki-przyklad ul a,
+.olech-powiazane ul a {
+	display: inline-block;
+	padding: 0.55em 1.2em;
+	border: 1px solid var(--wp--preset--color--obwodka);
+	border-radius: 2em;
+	color: var(--wp--preset--color--czarny);
+	text-decoration: none;
+	font-size: var(--wp--preset--font-size--small);
+	transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.2s ease;
+}
+
+.olech-lokalizacje-przyklad ul a:hover,
+.olech-poradniki-przyklad ul a:hover,
+.olech-powiazane ul a:hover {
+	background: var(--wp--preset--color--zloto);
+	border-color: var(--wp--preset--color--zloto);
+	color: var(--wp--preset--color--bialy);
+	transform: translateY(-2px);
+}
+
+/* ---------- Treść pojedynczej strony usługi ----------
+   Wspólny kontener dla post-content, ceny, FAQ, opinii i powiązanych —
+   czytelna szerokość (46rem), wyśrodkowane nagłówki sekcji (z rosnącym
+   akcentem, jak reszta strony), tekst akapitów zostaje wyrównany do
+   lewej — długie linie wyśrodkowanego tekstu źle się czyta. */
+
+.olech-usluga-tresc {
+	max-width: 46rem;
+	margin-inline: auto;
+}
+
+.olech-usluga-tresc h2 {
+	position: relative;
+	text-align: center;
+	font-size: clamp(1.75rem, 2.4vw, 2.25rem);
+	margin-block: 2.75rem 1.25rem;
+	padding-bottom: 0.75rem;
+}
+
+.olech-usluga-tresc > *:first-child h2:first-child,
+.olech-usluga-tresc h2:first-child {
+	margin-block-start: 0;
+}
+
+.olech-usluga-tresc h2::after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	bottom: 0;
+	transform: translateX(-50%);
+	width: 3rem;
+	height: 2px;
+	background: var(--wp--preset--color--zloto);
+}
+
+.olech-usluga-tresc h3 {
+	font-size: var(--wp--preset--font-size--large);
+	margin-block: 1.75rem 0.5rem;
+}
+
+.olech-usluga-tresc p,
+.olech-usluga-tresc li {
+	color: var(--wp--preset--color--tekst);
+}
+
+.olech-cena-uslugi {
+	text-align: center;
+	background: var(--wp--preset--color--bialy);
+	border: 1px solid var(--wp--preset--color--obwodka);
+	border-inline-start: 3px solid var(--wp--preset--color--zloto);
+	border-radius: 0.25em;
+	padding: 1.5rem 2rem;
+	font-size: var(--wp--preset--font-size--large);
+	box-shadow: 0 10px 24px rgba(20, 17, 13, 0.08);
+}
+
+.olech-cena-uslugi strong {
+	color: var(--wp--preset--color--czarny);
+}
+
+.olech-cena-uslugi--ukryta a {
+	color: var(--wp--preset--color--zloto);
+	font-weight: 600;
+}
+
+.olech-opinie {
+	text-align: center;
+}
+
+.olech-opinie p {
+	color: var(--wp--preset--color--tekst);
+	font-style: italic;
 }
 
 /* ---------- Formularz ---------- */

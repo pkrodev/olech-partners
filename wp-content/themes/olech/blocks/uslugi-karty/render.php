@@ -32,15 +32,23 @@ return function () {
 	// eager/high-priority. Na stronie głównej ta sama karta jest kilka
 	// sekcji niżej (hero, pasek zaufania, dlaczego-my, pasmo interstycjalne),
 	// więc tam wszystkie karty, łącznie z nią, mają być leniwie ładowane.
+	$na_archiwum                    = is_post_type_archive( 'usluga' );
 	$pierwsza_karta_nad_zaginieciem = ! is_front_page();
 
 	ob_start();
 	?>
 	<div class="olech-sekcja olech-uslugi">
-		<div class="olech-reveal">
-			<h2 class="olech-tytul-duzy">Usługi</h2>
-			<p class="olech-uslugi__lead">Sześć obszarów działania — od ustalenia miejsca pobytu po badanie wariografem. Każdą sprawę prowadzi licencjonowany zespół, z pełną poufnością na każdym etapie.</p>
-		</div>
+		<?php if ( ! $na_archiwum ) : ?>
+			<?php // Na /uslugi/ archiwum ma już własny, wycentrowany H1 + lead
+			// (templates/archive-usluga.html) — powtórzenie "Usługi" tutaj
+			// było zbędnym, mniejszym nagłówkiem TUŻ pod większym H1
+			// (uwaga użytkownika z sesji 2026-08-16). Na stronie głównej
+			// to wciąż jedyny nagłówek tej sekcji, więc zostaje. ?>
+			<div class="olech-reveal">
+				<h2 class="olech-tytul-duzy">Usługi</h2>
+				<p class="olech-uslugi__lead">Sześć obszarów działania — od ustalenia miejsca pobytu po badanie wariografem. Każdą sprawę prowadzi licencjonowany zespół, z pełną poufnością na każdym etapie.</p>
+			</div>
+		<?php endif; ?>
 		<div class="olech-uslugi__lista">
 			<?php foreach ( $uslugi as $i => $usluga ) : ?>
 				<?php $eager = ( 0 === $i && $pierwsza_karta_nad_zaginieciem ); ?>

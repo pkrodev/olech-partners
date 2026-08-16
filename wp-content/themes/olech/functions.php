@@ -27,6 +27,25 @@ add_action( 'after_setup_theme', function () {
 	);
 } );
 
+/**
+ * Strony z sekcją hero (pełnoekranowe, ciemne zdjęcie na górze) — nagłówek
+ * na tych stronach chowa się do momentu przewinięcia, tak jak na stronie
+ * głównej (rozszerzone w sesji 2026-08-16 na wszystkie strony z hero, nie
+ * tylko front-page). Strony BEZ hero (kontakt, poradnik, dziękujemy...)
+ * celowo nie są tu wymienione — tam nagłówek musi być widoczny od razu,
+ * bo nie ma czarnego tła hero, na którym mógłby się "ukrywać".
+ */
+function olech_ma_hero() {
+	return is_front_page() || is_singular( 'usluga' ) || is_post_type_archive( 'usluga' );
+}
+
+add_filter( 'body_class', function ( $klasy ) {
+	if ( olech_ma_hero() ) {
+		$klasy[] = 'olech-ma-hero';
+	}
+	return $klasy;
+} );
+
 add_action( 'wp_enqueue_scripts', function () {
 	wp_enqueue_style(
 		'olech-style',
@@ -35,7 +54,7 @@ add_action( 'wp_enqueue_scripts', function () {
 		wp_get_theme()->get( 'Version' )
 	);
 
-	if ( is_front_page() ) {
+	if ( olech_ma_hero() ) {
 		wp_enqueue_script(
 			'olech-header-scroll',
 			get_template_directory_uri() . '/assets/js/header-scroll.js',
@@ -43,7 +62,9 @@ add_action( 'wp_enqueue_scripts', function () {
 			wp_get_theme()->get( 'Version' ),
 			array( 'strategy' => 'defer' )
 		);
+	}
 
+	if ( is_front_page() ) {
 		wp_enqueue_script(
 			'olech-parallax',
 			get_template_directory_uri() . '/assets/js/parallax.js',

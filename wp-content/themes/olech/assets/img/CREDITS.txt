@@ -1,7 +1,7 @@
 Zdjęcia stockowe użyte tymczasowo do czasu dostarczenia przez klienta
 realnych fotografii (Daniel Olech, sprzęt, miejsce badania — sekcja 17
-CLAUDE.md). Źródło: Openverse (openverse.org), licencje CC BY / CC0 —
-wymagana atrybucja dla zdjęć CC BY.
+CLAUDE.md). Źródło: Openverse (openverse.org), licencje CC BY / CC BY-SA / CC0 —
+wymagana atrybucja dla zdjęć CC BY i CC BY-SA.
 
 hero-warszawa.jpg
   "Warsaw by night" by Leszek.Leszczynski, CC BY 2.0
@@ -30,3 +30,18 @@ uslugi/wykrywanie-podsluchow.jpg
 uslugi/windykacja.jpg
   "Legal Contract & Signature - Warm Tones" by Blogtrepreneur, CC BY 2.0
   https://commons.wikimedia.org/w/index.php?curid=55666535
+
+lady-justice.jpg — sesja redesignu 2026-08-16 (sekcja "Dlaczego warto nam zaufać")
+  "Close-up of Lady Justice statue holding scales, symbolizing justice
+  and fairness" by DP Singh Bhullar, CC BY-SA 4.0
+  https://commons.wikimedia.org/w/index.php?curid=196973578
+
+korytarz-swiatlo.jpg — sesja redesignu 2026-08-16 (pasmo interstycjalne "Jeden
+telefon"; zastąpiło wcześniejsze cien-dochodzenie.jpg po uwagach klienta)
+  "Under the city - Stockholm, Sweden - Black and white street
+  photography" by Giuseppe Milo (www.pixael.com), CC BY 2.0
+  https://www.flickr.com/photos/87690240@N03/23154504561
+
+sylwetka-teczka.jpg — sesja redesignu 2026-08-16 (sekcja "Jak działamy")
+  "walking and thinking" by d26b73, CC BY 2.0
+  https://www.flickr.com/photos/96106108@N07/15712137824

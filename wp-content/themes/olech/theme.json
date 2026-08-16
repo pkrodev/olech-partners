@@ -85,12 +85,20 @@
 					"slug": "xx-large",
 					"name": "Hero",
 					"size": "3.75rem",
-					"fluid": { "min": "2.25rem", "max": "4.25rem" }
+					"fluid": { "min": "1.875rem", "max": "4.25rem" }
 				}
 			]
 		}
 	},
 	"styles": {
+		"spacing": {
+			"padding": {
+				"top": "0",
+				"bottom": "0",
+				"left": "clamp(1.25rem, 4vw, 3rem)",
+				"right": "clamp(1.25rem, 4vw, 3rem)"
+			}
+		},
 		"color": {
 			"background": "var(--wp--preset--color--bialy)",
 			"text": "var(--wp--preset--color--tekst)"

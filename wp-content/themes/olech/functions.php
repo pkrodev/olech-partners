@@ -43,8 +43,38 @@ add_action( 'wp_enqueue_scripts', function () {
 			wp_get_theme()->get( 'Version' ),
 			array( 'strategy' => 'defer' )
 		);
+
+		wp_enqueue_script(
+			'olech-parallax',
+			get_template_directory_uri() . '/assets/js/parallax.js',
+			array(),
+			wp_get_theme()->get( 'Version' ),
+			array( 'strategy' => 'defer' )
+		);
 	}
+
+	// Animacje "wjazdu" przy scrollu (.olech-reveal) — używane m.in. przez
+	// blocks/uslugi-karty i sekcje strony głównej. Jeden mały skrypt,
+	// bez zależności, deferred, więc nie blokuje renderowania.
+	wp_enqueue_script(
+		'olech-scroll-reveal',
+		get_template_directory_uri() . '/assets/js/scroll-reveal.js',
+		array(),
+		wp_get_theme()->get( 'Version' ),
+		array( 'strategy' => 'defer' )
+	);
 } );
+
+/**
+ * Klasa .js-reveal na <html> tylko gdy JS faktycznie działa — dzięki temu
+ * CSS chowające .olech-reveal przed animacją (opacity:0) jest zaszyte pod
+ * tą klasą i nigdy nie ukryje treści użytkownikom bez JS (np. część
+ * czytników ekranu, wyłączony JS). Musi wykonać się jak najwcześniej,
+ * stąd inline w <head>, nie osobny plik.
+ */
+add_action( 'wp_head', function () {
+	echo '<script>document.documentElement.classList.add("js-reveal");</script>' . "\n";
+}, 1 );
 
 // Bez emoji-skryptów i zbędnych meta w <head> — sekcja 14 CLAUDE.md (wydajność).
 add_action( 'init', function () {

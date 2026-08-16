@@ -1,0 +1,14 @@
+{
+	"apiVersion": 3,
+	"name": "olech/cta-telefon",
+	"title": "CTA — zadzwoń",
+	"category": "widgets",
+	"icon": "phone",
+	"description": "Przycisk/link 'Zadzwoń' z numerem z Ustawienia → Dane firmy. Renderuje pusty ciąg, jeśli telefon nie jest ustawiony — nigdy LOREM (to nie brakujący fakt, tylko jeszcze nieuzupełnione ustawienie).",
+	"textdomain": "olech",
+	"attributes": {
+		"styl": { "type": "string", "default": "zloto" },
+		"etykieta": { "type": "string", "default": "Zadzwoń" },
+		"pokazEtykiete": { "type": "boolean", "default": true }
+	}
+}

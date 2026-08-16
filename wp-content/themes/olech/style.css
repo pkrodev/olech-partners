@@ -1,6 +1,6 @@
 /*
 Theme Name: Olech & Partners
-Version: 0.3.0
+Version: 0.4.0
 Requires PHP: 8.1
 */
 
@@ -22,22 +22,73 @@ body {
 	padding: 0;
 }
 
-/* Prawdziwa przyczyna białego paska NAD hero (nie sam margines body):
-   WP dokłada domyślny odstęp między blokami wewnątrz layout:constrained
+/* Siatka bezpieczeństwa przed poziomym przewijaniem na wąskich ekranach
+   (sekcja 14/15 CLAUDE.md) — znaleziony realny bug na mobile (sesja
+   2026-08-16): płynny rozmiar czcionki (`fluid` w theme.json) skaluje się
+   względem szerokości viewportu, nie względem faktycznie dostępnej
+   (spadkowanej) szerokości wewnątrz sekcji — przy wąskich telefonach
+   długie nagłówki (np. "Olech & Partners") potrafiły wystawać poza
+   padding zamiast się zawinąć. Globalny, defensywny fallback: zawijaj,
+   zanim cokolwiek wystawi poza ekran. */
+.wp-block-heading,
+.olech-hero__eyebrow,
+.olech-trust-bar {
+	overflow-wrap: break-word;
+}
+
+/* Prawdziwa przyczyna białego/kremowego paska NAD hero (diagnoza sesji
+   2026-08-16, potwierdzona wizualnie zrzutem ekranu): WP core dokłada
+   `.wp-site-blocks > * { margin-block-start: 24px } .wp-site-blocks > *
+   :first-child { margin-block-start: 0 }`. Nagłówek strony głównej jest
+   position:fixed (niżej) i wizualnie zajmuje 0px, ale w DOM-ie nadal JEST
+   pierwszym dzieckiem .wp-site-blocks — więc <main>, jako DRUGIE dziecko,
+   i tak dostaje 24px odstępu od góry, w którym prześwituje tło <body>
+   (białe, sekcja "styles.color.background" w theme.json). Poprzednia,
+   węższa wersja tej reguły zerowała tylko .olech-hero/.olech-band (co
+   naprawia odstępy MIĘDZY sekcjami), ale nie <main> samo — stąd pasek
+   wracał mimo tamtej naprawy.
+   Osobno: WP dokłada też odstęp między blokami wewnątrz layout:constrained
    — `:root :where(.is-layout-constrained) > *{margin-block-start: 24px}`
-   — wyjątek jest tylko dla :first-child. Nasze pasy pełnej szerokości
-   (.olech-band, .olech-hero) są bezpośrednimi dziećmi <main>, więc KAŻDY
-   z nich (poza pierwszym) i tak dostawał 24px odstępu, w którym
-   prześwitywało białe tło strony — widoczne jako cienki pasek między
-   sekcjami, a przy .olech-hero konkretnie nad nim. Zerujemy to tu wprost,
-   odstępy WEWNĄTRZ sekcji dają własne `padding-block`. */
+   — Nasze pasy pełnej szerokości (.olech-band, .olech-hero, .olech-cien)
+   są bezpośrednimi dziećmi <main>, więc KAŻDY z nich (poza pierwszym) i
+   tak dostawał ten sam odstęp, widoczny jako cienkie pasy między sekcjami. */
+main.wp-block-group {
+	margin-block-start: 0 !important;
+}
+
 .olech-hero,
-.olech-band {
+.olech-band,
+.olech-cien {
 	margin-block: 0 !important;
 }
 
 .olech-sekcja {
 	margin-block: 3rem;
+}
+
+/* ---------- Animacja wjazdu przy scrollu ----------
+   .js-reveal na <html> dokłada się tylko gdy JS faktycznie ruszył
+   (functions.php, wp_head) — bez tego (JS wyłączony, stary bot) treść
+   .olech-reveal zostaje w pełni widoczna od razu, nigdy nie chowamy jej
+   za czystym CSS-em. assets/js/scroll-reveal.js dokłada .is-visible. */
+.js-reveal .olech-reveal {
+	opacity: 0;
+	transform: translateY(28px);
+	transition: opacity 0.7s ease, transform 0.7s ease;
+	transition-delay: var(--olech-opoznienie, 0ms);
+}
+
+.js-reveal .olech-reveal.is-visible {
+	opacity: 1;
+	transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.js-reveal .olech-reveal {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
 }
 
 /* ---------- Nagłówek ---------- */
@@ -90,15 +141,96 @@ body.home.olech-scrolled .olech-header {
 	color: var(--wp--preset--color--zloto-jasne) !important;
 }
 
+.olech-header__prawa {
+	align-items: center;
+	gap: clamp(1rem, 3vw, 2rem) !important;
+}
+
+.olech-cta-tel-tekst {
+	color: var(--wp--preset--color--zloto-jasne);
+	text-decoration: none;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.olech-cta-tel-tekst::before {
+	content: "☎";
+	margin-inline-end: 0.4em;
+}
+
+.olech-cta-tel-tekst:hover {
+	color: var(--wp--preset--color--bialy);
+}
+
 /* ---------- Hero ---------- */
 
 .olech-hero {
+	position: relative;
+	overflow: hidden;
+	color: var(--wp--preset--color--tekst-jasny);
+	padding-block: 4rem;
+	/* Jawny padding-inline, nie poleganie na mechanizmie WP
+	   has-global-padding — ten jest celowo ZERO-wany na bezpośrednich
+	   dzieciach typu alignfull (żeby full-bleed tło działało), więc bez
+	   własnej wartości tekst dotykał krawędzi ekranu na wąskich telefonach
+	   (znaleziony realny bug, sesja 2026-08-16). Ten sam wzorzec co
+	   .olech-header i .olech-cien__tresc niżej. */
+	padding-inline: clamp(1.25rem, 4vw, 3rem);
+	text-align: center;
+}
+
+/* Tło na osobnej, animowanej warstwie (::before) — dzięki temu powolny
+   zoom (Ken Burns) nie rusza tekstu, który siedzi w normalnym przepływie
+   nad nim (position:relative + z-index poniżej). */
+.olech-hero::before {
+	content: "";
+	position: absolute;
+	inset: -2%;
 	background:
 		linear-gradient(180deg, rgba(20, 17, 13, 0.88) 0%, rgba(20, 17, 13, 0.94) 60%, var(--wp--preset--color--czarny) 100%),
 		url('assets/img/hero-warszawa.webp') center 30% / cover no-repeat;
-	color: var(--wp--preset--color--tekst-jasny);
-	padding-block: 4rem;
-	text-align: center;
+	animation: olech-kenburns 24s ease-in-out infinite alternate;
+	z-index: 0;
+}
+
+.olech-hero > * {
+	position: relative;
+	z-index: 1;
+}
+
+@keyframes olech-kenburns {
+	from { transform: scale(1); }
+	to { transform: scale(1.09); }
+}
+
+@keyframes olech-fade-up {
+	from { opacity: 0; transform: translateY(18px); }
+	to { opacity: 1; transform: none; }
+}
+
+.olech-hero .wp-block-site-logo,
+.olech-hero__eyebrow,
+.olech-hero h1,
+.olech-hero__lead,
+.olech-cta-row {
+	animation: olech-fade-up 0.9s ease both;
+}
+
+.olech-hero .wp-block-site-logo { animation-delay: 0.05s; }
+.olech-hero__eyebrow { animation-delay: 0.2s; }
+.olech-hero h1 { animation-delay: 0.35s; }
+.olech-hero__lead { animation-delay: 0.5s; }
+.olech-cta-row { animation-delay: 0.65s; }
+
+@media (prefers-reduced-motion: reduce) {
+	.olech-hero::before { animation: none; }
+	.olech-hero .wp-block-site-logo,
+	.olech-hero__eyebrow,
+	.olech-hero h1,
+	.olech-hero__lead,
+	.olech-cta-row {
+		animation: none;
+	}
 }
 
 .olech-hero .wp-block-site-logo {
@@ -169,6 +301,24 @@ body.home.olech-scrolled .olech-header {
 	box-shadow: 0 4px 14px rgba(185, 135, 28, 0.35);
 }
 
+/* Trzecia, "cichsza" opcja obok pary przycisków (np. hero) — zwykły
+   podkreślony link, żeby nie konkurował wizualnie z głównym CTA. */
+.olech-link-jasny {
+	display: inline-flex;
+	align-items: center;
+	color: var(--wp--preset--color--tekst-jasny);
+	text-decoration: underline;
+	text-decoration-color: rgba(237, 230, 214, 0.4);
+	text-underline-offset: 0.2em;
+	font-weight: 600;
+	padding-block: 0.85em;
+}
+
+.olech-link-jasny:hover {
+	color: var(--wp--preset--color--zloto-jasne);
+	text-decoration-color: currentColor;
+}
+
 /* Ozdobny rozdzielacz nawiązujący do ornamentu w logo — bez dodatkowego
    pliku graficznego, czysty CSS. */
 .olech-divider {
@@ -205,6 +355,10 @@ body.home.olech-scrolled .olech-header {
 
 .olech-band {
 	padding-block: 3rem;
+	/* j.w. .olech-hero — alignfull nie dostaje paddingu poziomego z WP,
+	   więc bez tego treść (nagłówki, tekst) dotykała krawędzi ekranu na
+	   wąskich telefonach. */
+	padding-inline: clamp(1.25rem, 4vw, 3rem);
 }
 
 .olech-band--kremowy {
@@ -228,6 +382,7 @@ body.home.olech-scrolled .olech-header {
 	flex-wrap: wrap;
 	font-size: var(--wp--preset--font-size--small);
 	padding-block: 0.9rem;
+	padding-inline: clamp(1.25rem, 4vw, 3rem);
 	color: var(--wp--preset--color--tekst);
 }
 
@@ -244,7 +399,14 @@ body.home.olech-scrolled .olech-header {
 	font-weight: 700;
 }
 
-/* ---------- Usługi ---------- */
+/* ---------- Usługi ----------
+   Układ edytorski, naprzemienny: wiersz 1 — zdjęcie|opis, wiersz 2 —
+   opis|zdjęcie, i tak na przemian (poprzednia siatka kafli "rozjeżdżała
+   się" wg uwagi z sesji 2026-08-16). Odwrócenie kolumn na wierszach
+   parzystych przez `direction: rtl` na wierszu + `direction: ltr` na
+   dzieciach — czysto wizualne, kolejność w DOM (i dla czytników ekranu)
+   zawsze: zdjęcie, potem tekst. Cały wiersz to jeden link, hover =
+   delikatny zoom zdjęcia + rosnąca złota kreska pod tytułem. */
 
 .olech-uslugi {
 	text-align: center;
@@ -253,111 +415,196 @@ body.home.olech-scrolled .olech-header {
 }
 
 .olech-uslugi h2 {
-	margin-bottom: 2rem;
+	margin-bottom: 0.6rem;
+}
+
+.olech-uslugi__lead {
+	max-width: 56ch;
+	margin-inline: auto;
+	margin-block-end: 2.5rem;
+	color: var(--wp--preset--color--tekst);
 }
 
 .olech-uslugi__lista {
 	display: flex;
 	flex-direction: column;
-	gap: 1.5rem;
+	gap: clamp(2.5rem, 6vw, 4rem);
 	text-align: start;
 }
 
-.olech-usluga-wiersz {
+.olech-usluga-fila {
 	display: grid;
-	grid-template-columns: minmax(220px, 320px) 1fr;
-	gap: 1.75rem;
-	align-items: stretch;
-	background: var(--wp--preset--color--bialy);
-	border: 1px solid var(--wp--preset--color--obwodka);
-	border-inline-start: 4px solid var(--wp--preset--color--zloto);
-	border-radius: 0.2em;
-	overflow: hidden;
+	grid-template-columns: 1fr 1fr;
+	align-items: center;
+	gap: clamp(1.5rem, 4vw, 3rem);
 	text-decoration: none;
 	color: inherit;
-	transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
-.olech-usluga-wiersz:hover {
-	box-shadow: 0 10px 28px rgba(20, 17, 13, 0.12);
-	transform: translateY(-2px);
+.olech-usluga-fila:nth-child(even) {
+	direction: rtl;
 }
 
-.olech-usluga-wiersz__zdjecie {
+.olech-usluga-fila:nth-child(even) > * {
+	direction: ltr;
+}
+
+.olech-usluga-fila__obraz {
+	position: relative;
 	display: block;
-	min-height: 180px;
+	aspect-ratio: 4 / 3;
+	border-radius: 0.25em;
+	overflow: hidden;
+	background: var(--wp--preset--color--czarny-2);
+	box-shadow: 0 14px 32px rgba(20, 17, 13, 0.16);
 }
 
-.olech-usluga-wiersz__zdjecie img {
+.olech-usluga-fila__obraz img {
 	width: 100%;
 	height: 100%;
-	min-height: 180px;
 	object-fit: cover;
 	display: block;
+	transition: transform 0.6s ease;
 }
 
-.olech-usluga-wiersz__tresc {
+.olech-usluga-fila:hover .olech-usluga-fila__obraz img,
+.olech-usluga-fila:focus-visible .olech-usluga-fila__obraz img {
+	transform: scale(1.06);
+}
+
+.olech-usluga-fila__tresc {
 	display: flex;
 	flex-direction: column;
 	gap: 0.6rem;
-	padding: 1.5rem 1.75rem 1.5rem 0;
 }
 
-.olech-usluga-wiersz:has(.olech-usluga-wiersz__zdjecie) .olech-usluga-wiersz__tresc {
-	padding-inline-start: 0;
+.olech-usluga-fila__eyebrow {
+	color: var(--wp--preset--color--zloto);
+	text-transform: uppercase;
+	letter-spacing: 0.14em;
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 700;
 }
 
-.olech-uslugi__lista > a:not(:has(.olech-usluga-wiersz__zdjecie)) .olech-usluga-wiersz__tresc {
-	padding-inline-start: 1.75rem;
-}
-
-.olech-usluga-wiersz__tytul {
+.olech-usluga-fila__tytul {
+	position: relative;
+	display: inline-block;
+	width: fit-content;
 	font-family: var(--wp--preset--font-family--playfair-display);
 	font-weight: 700;
-	font-size: var(--wp--preset--font-size--large);
+	font-size: var(--wp--preset--font-size--x-large);
 	color: var(--wp--preset--color--czarny);
+	padding-bottom: 0.4rem;
 }
 
-.olech-usluga-wiersz__opis {
+.olech-usluga-fila__tytul::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	height: 2px;
+	width: 2.5rem;
+	background: var(--wp--preset--color--zloto);
+	transition: width 0.35s ease;
+}
+
+.olech-usluga-fila:hover .olech-usluga-fila__tytul::after,
+.olech-usluga-fila:focus-visible .olech-usluga-fila__tytul::after {
+	width: 100%;
+}
+
+.olech-usluga-fila__opis {
 	color: var(--wp--preset--color--tekst);
+	max-width: 52ch;
 }
 
-.olech-usluga-wiersz__link {
-	margin-top: auto;
-	padding-top: 0.5rem;
+.olech-usluga-fila__link {
+	margin-top: 0.4rem;
 	color: var(--wp--preset--color--zloto);
 	font-weight: 600;
-	font-size: var(--wp--preset--font-size--small);
 }
 
-@media (max-width: 700px) {
-	.olech-usluga-wiersz {
+.olech-usluga-fila__link span {
+	display: inline-block;
+	transition: transform 0.25s ease;
+}
+
+.olech-usluga-fila:hover .olech-usluga-fila__link span,
+.olech-usluga-fila:focus-visible .olech-usluga-fila__link span {
+	transform: translateX(4px);
+}
+
+@media (max-width: 720px) {
+	.olech-usluga-fila,
+	.olech-usluga-fila:nth-child(even) {
 		grid-template-columns: 1fr;
+		direction: ltr;
 	}
 
-	.olech-usluga-wiersz__zdjecie,
-	.olech-usluga-wiersz__zdjecie img {
-		min-height: 160px;
-	}
-
-	.olech-usluga-wiersz__tresc,
-	.olech-usluga-wiersz:has(.olech-usluga-wiersz__zdjecie) .olech-usluga-wiersz__tresc {
-		padding: 1.25rem;
+	.olech-usluga-fila__tytul {
+		font-size: var(--wp--preset--font-size--large);
 	}
 }
 
-/* ---------- Dlaczego warto nam zaufać (strona główna) ---------- */
+/* ---------- Dlaczego warto nam zaufać (strona główna) ----------
+   Układ redakcyjny: zdjęcie (Temida) w ramce po lewej, treść po prawej —
+   zamiast czystego bloku tekstu. Kolejność w markupie: obraz, potem
+   treść (mobile: obraz nad tekstem, naturalny porządek DOM). */
 
 .olech-dlaczego-my {
 	text-align: center;
 }
 
 .olech-dlaczego-my h2 {
-	margin-bottom: 2rem;
+	margin-bottom: 0.75rem;
+}
+
+.olech-dlaczego-my__wrap {
+	display: grid;
+	grid-template-columns: minmax(260px, 420px) 1fr;
+	gap: clamp(2rem, 5vw, 3.5rem);
+	align-items: center;
+	text-align: start;
+}
+
+@media (max-width: 800px) {
+	.olech-dlaczego-my__wrap {
+		grid-template-columns: 1fr;
+	}
+}
+
+.olech-dlaczego-my__obraz {
+	margin: 0;
+	position: relative;
+	border-radius: 0.25em;
+	overflow: hidden;
+	aspect-ratio: 4 / 3;
+	border: 1px solid var(--wp--preset--color--obwodka);
+	box-shadow: 0 16px 36px rgba(20, 17, 13, 0.14);
+}
+
+.olech-dlaczego-my__obraz img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.olech-dlaczego-my__obraz figcaption {
+	position: absolute;
+	inset-inline: 0;
+	inset-block-end: 0;
+	padding: 0.85rem 1.1rem;
+	background: linear-gradient(0deg, rgba(20, 17, 13, 0.85), transparent);
+	color: var(--wp--preset--color--tekst-jasny);
+	font-size: var(--wp--preset--font-size--small);
+}
+
+.olech-dlaczego-my__tresc h2 {
+	text-align: start;
 }
 
 .olech-dlaczego-my__siatka {
-	text-align: start;
 	gap: 1.5rem !important;
 }
 
@@ -378,6 +625,144 @@ body.home.olech-scrolled .olech-header {
 	margin: 0;
 }
 
+/* ---------- Pasmo interstycjalne (pełna szerokość, zdjęcie + krótkie hasło) ----------
+   Wizualny "oddech" między sekcjami tekstowymi — duże zdjęcie, mocny
+   gradient pod spód dla czytelności tekstu, ten sam Ken Burns co hero
+   (spójność, niski koszt bo czysty transform). */
+
+.olech-cien {
+	position: relative;
+	overflow: hidden;
+	min-height: clamp(20rem, 42vw, 30rem);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding-block: 2rem;
+}
+
+.olech-cien::before {
+	content: "";
+	position: absolute;
+	inset: -14% -2%;
+	background:
+		linear-gradient(180deg, rgba(20, 17, 13, 0.5) 0%, rgba(20, 17, 13, 0.8) 100%),
+		url('assets/img/korytarz-swiatlo.webp') center 45% / cover no-repeat;
+	transform: translateY(var(--olech-parallax, 0px));
+	z-index: 0;
+}
+
+.olech-cien__tresc {
+	position: relative;
+	z-index: 1;
+	max-width: 42rem;
+	padding-inline: 1.5rem;
+	color: var(--wp--preset--color--tekst-jasny);
+}
+
+.olech-cien__eyebrow {
+	color: var(--wp--preset--color--zloto-jasne);
+	text-transform: uppercase;
+	letter-spacing: 0.15em;
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 600;
+	margin-block-end: 0.5rem;
+}
+
+.olech-cien h2 {
+	color: var(--wp--preset--color--bialy);
+	margin-block-end: 1.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.olech-cien::before { transform: none; }
+}
+
+/* ---------- Jak działamy (skrót na stronie głównej) ---------- */
+
+.olech-jak-dzialamy-skrot {
+	display: grid;
+	grid-template-columns: 1fr minmax(260px, 380px);
+	gap: clamp(2rem, 5vw, 3.5rem);
+	align-items: center;
+}
+
+@media (max-width: 800px) {
+	.olech-jak-dzialamy-skrot {
+		grid-template-columns: 1fr;
+	}
+
+	.olech-jak-dzialamy-skrot__obraz {
+		order: -1;
+	}
+}
+
+.olech-jak-dzialamy-skrot h2 {
+	margin-bottom: 0.6rem;
+}
+
+.olech-jak-dzialamy-skrot__lead {
+	color: var(--wp--preset--color--tekst);
+	max-width: 48ch;
+	margin-block-end: 1.75rem;
+}
+
+.olech-jak-dzialamy-skrot__kroki {
+	display: grid;
+	gap: 1.25rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	counter-reset: olech-krok;
+}
+
+.olech-jak-dzialamy-skrot__kroki li {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 1rem;
+	align-items: baseline;
+}
+
+.olech-jak-dzialamy-skrot__kroki li::before {
+	counter-increment: olech-krok;
+	content: counter(olech-krok);
+	font-family: var(--wp--preset--font-family--playfair-display);
+	font-weight: 700;
+	font-size: var(--wp--preset--font-size--large);
+	color: var(--wp--preset--color--zloto);
+	line-height: 1;
+}
+
+.olech-jak-dzialamy-skrot__krok-tresc {
+	display: block;
+}
+
+.olech-jak-dzialamy-skrot__kroki p {
+	margin: 0;
+	color: var(--wp--preset--color--tekst);
+}
+
+.olech-jak-dzialamy-skrot__kroki strong {
+	display: block;
+	color: var(--wp--preset--color--czarny);
+}
+
+.olech-jak-dzialamy-skrot__obraz {
+	margin: 0;
+	position: relative;
+	border-radius: 0.25em;
+	overflow: hidden;
+	aspect-ratio: 4 / 5;
+	box-shadow: 0 16px 36px rgba(20, 17, 13, 0.14);
+}
+
+.olech-jak-dzialamy-skrot__obraz img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
 /* ---------- Sekcja wyróżniona (np. wariograf) ---------- */
 
 .olech-wariograf {
@@ -392,6 +777,41 @@ body.home.olech-scrolled .olech-header {
 
 .olech-wariograf a:not(.olech-btn) {
 	color: var(--wp--preset--color--zloto-jasne);
+}
+
+/* Linia pulsu — nawiązanie do wariografu, czysty SVG (bez zdjęcia sprzętu,
+   celowo — sekcja 17 CLAUDE.md: model/producenta nie znamy). "Rysuje się"
+   raz, gdy sekcja wjeżdża w viewport (ta sama klasa .olech-reveal co
+   reszta strony, JS tylko dokłada .is-visible). */
+.olech-puls {
+	display: block;
+	width: min(100%, 26rem);
+	margin-inline: auto;
+	margin-block-end: 1.5rem;
+	overflow: visible;
+}
+
+.olech-puls path {
+	fill: none;
+	stroke: var(--wp--preset--color--zloto-jasne);
+	stroke-width: 2.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-dasharray: 620;
+	stroke-dashoffset: 620;
+	transition: stroke-dashoffset 1.6s ease;
+	transition-delay: var(--olech-opoznienie, 0ms);
+}
+
+.js-reveal .olech-reveal.is-visible .olech-puls path {
+	stroke-dashoffset: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.olech-puls path {
+		stroke-dashoffset: 0;
+		transition: none;
+	}
 }
 
 /* ---------- Sądy / gminy / FAQ / lokalizacje / poradniki ---------- */
@@ -583,3 +1003,4 @@ body.home.olech-scrolled .olech-header {
 		padding-block-end: 3.25rem;
 	}
 }
+

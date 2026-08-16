@@ -18,7 +18,10 @@ nadrzędna to zawsze `CLAUDE.md`.
   16, patrz niżej): `013c77d` (dane od klienta, cena wariografu,
   windykacja), `c6b88b2` (branding, redesign, obrazy), `eb7703b`
   (2026-08-16 — poprawki po przeglądzie: animacje scrollowania, układ
-  usług, CTA telefon, patrz sekcja niżej). Punkty 10 i 12 pominięte —
+  usług, CTA telefon), `83d9a18` (2026-08-16, ciąg dalszy tej samej
+  sesji — hierarchia nagłówków, przebudowa "Dlaczego warto nam zaufać",
+  wyrównanie przycisków CTA i wyśrodkowanie cyfr zmierzone w
+  przeglądarce, patrz sekcja niżej). Punkty 10 i 12 pominięte —
   zablokowane na braku dostępów, patrz niżej.
 - **`wp-config.php` jest w `.gitignore` (świadomie, dane środowiskowe) —
   po KAŻDYM `ddev start`/regeneracji tego pliku trzeba ręcznie dopisać
@@ -750,6 +753,99 @@ Zweryfikowane end-to-end: HTTP 200 na stronie głównej, `/uslugi/`,
 pojedynczych usługach, `/kontakt/`, zero błędów PHP w logach, zero
 nowych `{{LOREM}}`, `check-internal-links.py` bez regresji. Scommitowane
 i wypchnięte na `origin/main` (`eb7703b`).
+
+## Druga runda dopieszczania (2026-08-16, ciąg dalszy tej samej rozmowy, commit `83d9a18`)
+
+Kilka kolejnych, drobniejszych rund feedbacku od użytkownika po `eb7703b` —
+nieopisane osobno per-runda, tylko końcowy stan. **Nieprzetestowane pod
+presją czasu wcześniejsze próby (-1px, -3px, -5px na cyfry; samo
+`align-items:center` na przyciski) okazały się niewystarczające lub
+błędne — patrz niżej, dlaczego i co finalnie zadziałało.**
+
+- **Hierarchia nagłówków sekcji** — zwykłe `<h2>` ("Usługi", "Dlaczego
+  warto nam zaufać", "Jak działamy", "Badanie wariografem") było
+  MNIEJSZE niż tytuł pojedynczej usługi w środku sekcji Usługi
+  (x-large, do 2.75rem) — odwracało to hierarchię wizualną. Nowa,
+  współdzielona klasa `.olech-tytul-duzy`
+  (`clamp(2.25rem, 3.6vw, 3.25rem)`) na wszystkich czterech.
+- **Hero: usunięty link "Zobacz usługi"** — nie pasował do rzędu CTA
+  (uwaga użytkownika).
+- **"Dlaczego warto nam zaufać" — przebudowana od zera po uwadze
+  "wygląda źle"**: pierwsza wersja (siatka 2×2 kart z ikonami, zdjęcie
+  wyśrodkowane `align-items:center` obok) źle wyglądała, bo zdjęcie
+  (krótsze) "wisiało" osobno, niedopasowane wysokością do wyższej
+  siatki kart. Finalna wersja: `align-items:stretch` — zdjęcie
+  wypełnia dokładnie wysokość listy obok; siatka 2×2 kart zamieniona
+  na pionową listę bez teł/ramek (ikona + tekst w rzędzie, cienka
+  linia dzieląca punkty) — mniej "boksowato", bardziej edytorsko.
+  4 minimalistyczne ikony SVG (mapa, zegar, globus, tarcza) w kółkach,
+  hover: ikona koloruje się na złoto i przesuwa (`transform:translateX`,
+  **nie** `gap` — animowanie `gap` na flexboksie ma niepewne wsparcie
+  w przeglądarkach i zamiast płynnie "skakało", co użytkownik trafnie
+  zgłosił jako "brzydki sposób, jakby się przestawiało od nowa").
+  Zdjęcie dostało powolny, ciągły "oddech" (Ken Burns, 32s) zamiast
+  zoomu na hover — celowo inny efekt niż w Usługach, żeby sekcje się
+  wizualnie nie powtarzały.
+- **Główne CTA (`.olech-btn`)** — dodany delikatny "połysk"
+  przesuwający się po przycisku na hover (pseudo-element `::after`,
+  gradient + skew, transition `left`), mocniejszy hover-lift i cień —
+  reszta strony miała już animowane akcenty, przyciski były w
+  porównaniu płaskie.
+- **Przyciski w rzędach CTA (hero, "Jeden telefon", wariograf) nierówne
+  — prawdziwa przyczyna znaleziona przez pomiar w przeglądarce, nie na
+  oko** (`getBoundingClientRect()` wstrzyknięty tymczasowo przez
+  `wp_footer`): `align-items:center` na `.olech-cta-row` SAMO nie
+  wystarczało. Powód: "Zostaw zgłoszenie" to `<p><a>…</a></p>` (blok
+  Paragraph), "Zadzwoń" z bloku `olech/cta-telefon` to goły `<a>` bez
+  `<p>`. Nawet przy `margin:0` na `<p>`, sam akapit ma niewidoczną
+  przestrzeń wynikającą z metryk linii tekstu (inline "strut" w
+  specyfikacji CSS) — u nas realnie 66,3px zamiast 58,1px wysokości
+  przycisku. Ta nadmiarowa wysokość ustawiała wysokość całego rzędu
+  flex, przez co drugi przycisk (bez `<p>`) wyśrodkowywał się względem
+  niej i wypadał 4,1px niżej. **Fix: `.olech-cta-row p { display:
+  contents; }`** — usuwa `<p>` z drzewa layoutu całkowicie, zostaje
+  tylko `<a>` bezpośrednio jako dziecko flexa. Zmierzone po poprawce:
+  oba przyciski `top`/`bottom` identyczne co do piksela.
+- **Cyfry w kółkach "Jak działamy" — poprawione przez realny pomiar
+  pikseli, nie zgadywanie.** Kolejne próby na oko (-1px, -3px, -5px)
+  nie trafiały (albo wciąż za nisko, albo — jak się okazało przy
+  pomiarze — kierunek/skala poprawki były zgadywane bez podstawy).
+  Metoda: wstrzyknięty tymczasowo skrypt rysował na żywej stronie
+  niebieski znacznik na obliczonym geometrycznym środku koła
+  (`getBoundingClientRect`), robiony był zrzut ekranu, piksele
+  analizowane bezpośrednio (własny, zależny-od-niczego dekoder PNG w
+  Pythonie — `zlib`+`struct`, bo środowisko nie miało PIL/numpy),
+  rozróżniając kolor czarnej cyfry od złotej obwódki koła po RGB (nie
+  tylko po jasności — obie miały zbliżoną jasność, co pierwszy podejście
+  myliło). **Odkryty po drodze błąd w samej metodzie pomiaru**: pierwszy
+  znacznik wylądował >100px od koła, bo skrypt mierzył pozycję zanim
+  leniwie ładowane zdjęcia usług (nad tą sekcją, dużo wyżej na stronie)
+  skończyły się ładować i dociążać layout w dół — poprawka: wymuszenie
+  finalnego stanu `.olech-reveal` (`is-visible`, `transition:none`)
+  przed pomiarem. Wynik końcowy: prawdziwa potrzebna korekta to
+  **-4px** (`transform: translateY(-4px)` na `li::before`), potwierdzona
+  wizualnie (cyfra dokładnie na linii środka na zrzucie ekranu).
+- **Ważna lekcja procesowa, zastosowana od tej rundy**: `style.css`
+  `Version` w nagłówku pliku podbijany przy **każdej** turze poprawek
+  (0.4.0 → 0.5.0 → 0.5.1 → 0.5.2) — wcześniej w tej sesji nie był
+  podbijany przez kilka rund z rzędu, co mogło sprawiać wrażenie że
+  poprawki "nic nie dają" (przeglądarka mogła serwować starą wersję
+  pliku spod tego samego URL). Pamiętać o tym w KAŻDEJ kolejnej sesji
+  dotykającej `style.css`.
+- **Metoda zmierz-nie-zgaduj, warta powtórzenia w przyszłości**: gdy
+  poprawka "na oko" nie działa (zwłaszcza subpikselowe/wizualne
+  rozjazdy), wstrzyknij tymczasowy skrypt diagnostyczny przez
+  `add_action('wp_footer', ...)`, zmierz realne `getBoundingClientRect()`,
+  zrzuć ekran (`chrome.exe --headless=new --screenshot`, patrz sekcja
+  wyżej), przeanalizuj piksele (dekoder PNG w
+  `scripts/`-analogicznym skrypcie tymczasowym, bez zależności od
+  PIL/numpy — patrz metoda wyżej), i **zawsze usuń kod diagnostyczny
+  po zakończeniu** (sprawdzone `git diff functions.php` pusty przed
+  commitem).
+
+Zweryfikowane end-to-end: HTTP 200 wszędzie, zero błędów PHP, zero
+nowych `{{LOREM}}`, `functions.php` bez pozostałości debugowych
+(zweryfikowane `git diff` puste przed commitem tej rundy).
 
 ## Pominięte w tej sesji — punkty 10 i 12 (zablokowane)
 

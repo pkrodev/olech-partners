@@ -1,0 +1,9 @@
+{
+	"apiVersion": 3,
+	"name": "olech/hero-uslugi-archiwum",
+	"title": "Hero — hub usług",
+	"category": "widgets",
+	"icon": "format-image",
+	"description": "Hero na /uslugi/ — statyczny odpowiednik olech/hero-usluga (ten sam wygląd), ale treść (tytuł, lead) jest stała, nie per-post. Dynamiczny blok zamiast surowego HTML w templates/archive-usluga.html, bo URL zdjęcia w tle musi iść przez get_template_directory_uri() (patrz blocks/obraz-motywu — ten sam bug znaleziony przy wdrożeniu na home.pl: instalacja w podkatalogu łamała zahardkodowane ścieżki '/wp-content/...').",
+	"textdomain": "olech"
+}

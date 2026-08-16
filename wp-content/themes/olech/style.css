@@ -1,6 +1,6 @@
 /*
 Theme Name: Olech & Partners
-Version: 0.5.2
+Version: 0.5.3
 Requires PHP: 8.1
 */
 
@@ -28,11 +28,22 @@ body {
    względem szerokości viewportu, nie względem faktycznie dostępnej
    (spadkowanej) szerokości wewnątrz sekcji — przy wąskich telefonach
    długie nagłówki (np. "Olech & Partners") potrafiły wystawać poza
-   padding zamiast się zawinąć. Globalny, defensywny fallback: zawijaj,
-   zanim cokolwiek wystawi poza ekran. */
-.wp-block-heading,
-.olech-hero__eyebrow,
-.olech-trust-bar {
+   padding zamiast się zawinąć. Pierwsza wersja tej reguły wymieniała
+   klasy z osobna (.wp-block-heading, .olech-hero__eyebrow,
+   .olech-trust-bar) — niekompletna lista, bo nie obejmowała np.
+   .olech-usluga-hero__tytul/__lead (surowe H1/P w blokach hero-usluga
+   i hero-uslugi-archiwum, nie blok Heading, więc bez klasy
+   wp-block-heading). Stąd identyczny bug na /uslugi/ mimo wcześniejszej
+   "naprawy". Zamiast dalej łatać pojedynczo, reguła obejmuje teraz
+   wszystkie nagłówki i akapity globalnie — zanim cokolwiek wystawi poza
+   ekran, zawijaj. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
 	overflow-wrap: break-word;
 }
 

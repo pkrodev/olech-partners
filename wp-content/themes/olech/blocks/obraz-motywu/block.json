@@ -1,0 +1,17 @@
+{
+	"apiVersion": 3,
+	"name": "olech/obraz-motywu",
+	"title": "Obraz z motywu",
+	"category": "media",
+	"icon": "format-image",
+	"description": "Statyczny obrazek z assets/img motywu (nie z biblioteki mediów), z poprawnym absolutnym URL-em przez get_template_directory_uri() — naprawia realny bug znaleziony przy wdrożeniu na home.pl: szablony HTML (templates/*.html) nie wykonują PHP, więc wcześniejszy hardkodowany ścieżki '/wp-content/themes/olech/...' zakładały instalację WordPressa w korzeniu domeny. Łamało się to na instalacji w podkatalogu (np. /autoinstalator/wordpressplugins/) — przeglądarka szukała pliku od korzenia domeny, trafiając w INNĄ stronę stojącą tam u klienta.",
+	"textdomain": "olech",
+	"attributes": {
+		"plik": { "type": "string", "default": "" },
+		"alt": { "type": "string", "default": "" },
+		"szerokosc": { "type": "number", "default": 0 },
+		"wysokosc": { "type": "number", "default": 0 },
+		"podpis": { "type": "string", "default": "" },
+		"klasaFigury": { "type": "string", "default": "" }
+	}
+}

@@ -97,6 +97,45 @@ add_action( 'wp_head', function () {
 	echo '<script>document.documentElement.classList.add("js-reveal");</script>' . "\n";
 }, 1 );
 
+/**
+ * Naprawa linków wewnętrznych, gdy WordPress stoi w podkatalogu, nie w
+ * korzeniu domeny (diagnoza sesji 2026-08-16 na żywym serwerze home.pl,
+ * FTP: /public_html/autoinstalator/wordpressplugins/ — instalacja
+ * tymczasowa/podglądowa dla klienta, nie docelowa domena z sekcji 13
+ * CLAUDE.md). Znaleziony realny powód "404 po kliknięciu w menu na
+ * telefonie": blok Nawigacja (core/navigation) zawsze renderuje odnośniki
+ * wewnętrzne jako ścieżki względem KORZENIA domeny (np. href="/kontakt/"),
+ * nigdy względem faktycznego katalogu instalacji — to zachowanie rdzenia
+ * WP, nie błąd tego motywu. Lokalnie niewidoczne, bo DDEV stoi w korzeniu
+ * swojej domeny (olech.ddev.site/), więc "/kontakt/" tam trafia poprawnie.
+ * Na home.pl "/kontakt/" ląduje w korzeniu CAŁEGO serwera (gdzie stoi
+ * inna strona klienta), nie w podkatalogu z WordPressem — stąd 404 przy
+ * każdym kliknięciu w menu, mimo że bezpośredni URL działał (curl/testy
+ * trafiały w poprawny, pełny adres, nie w link z menu).
+ * Ten sam problem dotyczy też pojedynczych zahardkodowanych odnośników
+ * względnych wpisanych ręcznie w szablonach (np. przycisk "Dowiedz się
+ * więcej" w front-page.html, href="/uslugi/badanie-wariografem/") — stąd
+ * naprawa na poziomie render_block (każdy blok), nie tylko nawigacji.
+ * Gdy instalacja stoi w korzeniu domeny (produkcja docelowa), prefiks jest
+ * pusty i filtr nic nie robi.
+ */
+add_filter( 'render_block', function ( $block_content ) {
+	static $prefiks = null;
+	static $wzorzec = null;
+	if ( null === $prefiks ) {
+		$prefiks = untrailingslashit( (string) wp_parse_url( home_url(), PHP_URL_PATH ) );
+		// render_block wywołuje się dla każdego poziomu zagnieżdżenia bloków
+		// (blok-rodzic dostaje do filtrowania już przefiltrowaną treść dzieci),
+		// więc bez wykluczenia już-doklejonego prefiksu w ujemnym lookahead
+		// ta sama treść dostawałaby prefiks wielokrotnie (raz na poziom).
+		$wzorzec = '#href="/(?!' . preg_quote( ltrim( $prefiks, '/' ), '#' ) . '/)#';
+	}
+	if ( '' === $prefiks || false === strpos( $block_content, 'href="/' ) ) {
+		return $block_content;
+	}
+	return preg_replace( $wzorzec, 'href="' . $prefiks . '/', $block_content );
+} );
+
 // Bez emoji-skryptów i zbędnych meta w <head> — sekcja 14 CLAUDE.md (wydajność).
 add_action( 'init', function () {
 	remove_action( 'wp_head', 'print_emoji_detection_script', 7 );

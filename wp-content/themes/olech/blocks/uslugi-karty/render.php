@@ -38,7 +38,7 @@ return function () {
 	?>
 	<div class="olech-sekcja olech-uslugi">
 		<div class="olech-reveal">
-			<h2>Usługi</h2>
+			<h2 class="olech-tytul-duzy">Usługi</h2>
 			<p class="olech-uslugi__lead">Sześć obszarów działania — od ustalenia miejsca pobytu po badanie wariografem. Każdą sprawę prowadzi licencjonowany zespół, z pełną poufnością na każdym etapie.</p>
 		</div>
 		<div class="olech-uslugi__lista">

@@ -1,6 +1,6 @@
 /*
 Theme Name: Olech & Partners
-Version: 0.4.0
+Version: 0.5.2
 Requires PHP: 8.1
 */
 
@@ -64,6 +64,16 @@ main.wp-block-group {
 
 .olech-sekcja {
 	margin-block: 3rem;
+}
+
+/* Wspólny, celowo DUŻY rozmiar tytułu sekcji ("Usługi", "Dlaczego warto
+   nam zaufać", "Jak działamy", "Badanie wariografem") — bez tego zwykły
+   <h2> (rozmiar z domyślnych stylów WP) wypadał MNIEJSZY niż np. tytuł
+   pojedynczej usługi w sekcji Usługi (x-large, do 2.75rem), co odwracało
+   hierarchię wizualną (uwaga z sesji 2026-08-16). Wartość dobrana tak,
+   żeby zawsze była wyraźnie większa niż x-large. */
+.olech-tytul-duzy {
+	font-size: clamp(2.25rem, 3.6vw, 3.25rem);
 }
 
 /* ---------- Animacja wjazdu przy scrollu ----------
@@ -267,13 +277,34 @@ body.home.olech-scrolled .olech-header {
 .olech-cta-row {
 	display: flex;
 	justify-content: center;
+	align-items: center;
 	gap: 1rem;
 	flex-wrap: wrap;
 	margin-block-start: 1.75rem;
 }
 
+/* Prawdziwa przyczyna nierównych przycisków w rzędach CTA (hero, "Jeden
+   telefon", wariograf) — zmierzona wprost w przeglądarce (getBoundingClientRect),
+   nie na oko: "Zostaw zgłoszenie" to <p><a>...</a></p> (blok Paragraph),
+   a "Zadzwoń" z bloku olech/cta-telefon to goły <a>, bez <p>. Nawet przy
+   margin:0 na <p>, akapit ma WŁASNĄ wysokość linii tekstu (font-size +
+   line-height danego kontekstu) — to niewidoczna przestrzeń wynikająca
+   z inline "strut" w specyfikacji CSS, obecna nawet gdy jedynym dzieckiem
+   <p> jest inline-block (przycisk). W tym wypadku dawało to realnie
+   66,3px zamiast 58,1px wysokości przycisku — 8,2px różnicy, która
+   ustawiała wysokość całego rzędu flex, przez co DRUGI przycisk (bez <p>,
+   58,1px) wyśrodkowywał się względem tej nadmiarowej wysokości i wypadał
+   4,1px niżej. `display:contents` na <p> usuwa je z drzewa layoutu
+   całkowicie (zostaje tylko sam <a>, bezpośrednio jako dziecko flexa) —
+   likwiduje różnicę u źródła, zamiast łatać ją przybliżoną wartością. */
+.olech-cta-row p {
+	display: contents;
+}
+
 .olech-btn {
+	position: relative;
 	display: inline-block;
+	overflow: hidden;
 	padding: 0.85em 1.75em;
 	border-radius: 0.2em;
 	text-decoration: none;
@@ -281,7 +312,7 @@ body.home.olech-scrolled .olech-header {
 	font-weight: 600;
 	letter-spacing: 0.01em;
 	cursor: pointer;
-	transition: transform 0.15s ease, box-shadow 0.15s ease;
+	transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .olech-btn--zloto {
@@ -296,9 +327,36 @@ body.home.olech-scrolled .olech-header {
 	border: 1px solid var(--wp--preset--color--zloto-jasne);
 }
 
+/* Delikatny "połysk" przesuwający się po przycisku na hover — reszta
+   strony ma już swoje animowane akcenty (zoom zdjęć, ikony, linia
+   pulsu), główne CTA było w porównaniu płaskie (uwaga z sesji
+   2026-08-16). Czysty transform, nic nie rusza layoutu. */
+.olech-btn::after {
+	content: "";
+	position: absolute;
+	inset-block: 0;
+	left: -60%;
+	width: 40%;
+	background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+	transform: skewX(-20deg);
+	transition: left 0.7s ease;
+	pointer-events: none;
+}
+
+.olech-btn:hover::after {
+	left: 130%;
+}
+
 .olech-btn:hover {
-	transform: translateY(-1px);
-	box-shadow: 0 4px 14px rgba(185, 135, 28, 0.35);
+	transform: translateY(-2px);
+	box-shadow: 0 10px 24px rgba(185, 135, 28, 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.olech-btn::after {
+		transition: none;
+		display: none;
+	}
 }
 
 /* Trzecia, "cichsza" opcja obok pary przycisków (np. hero) — zwykły
@@ -561,9 +619,13 @@ body.home.olech-scrolled .olech-header {
 
 .olech-dlaczego-my__wrap {
 	display: grid;
-	grid-template-columns: minmax(260px, 420px) 1fr;
-	gap: clamp(2rem, 5vw, 3.5rem);
-	align-items: center;
+	grid-template-columns: minmax(280px, 420px) 1fr;
+	gap: clamp(2.5rem, 6vw, 4.5rem);
+	/* stretch (nie center!) — dzięki temu zdjęcie wypełnia dokładnie tę
+	   samą wysokość co lista punktów obok, zamiast "wisieć" osobno w
+	   niedopasowanej wysokości (realny problem z poprzedniej wersji,
+	   zgłoszony przez użytkownika). */
+	align-items: stretch;
 	text-align: start;
 }
 
@@ -571,16 +633,30 @@ body.home.olech-scrolled .olech-header {
 	.olech-dlaczego-my__wrap {
 		grid-template-columns: 1fr;
 	}
+
+	.olech-dlaczego-my__obraz-holder {
+		height: auto;
+	}
+
+	.olech-dlaczego-my__obraz {
+		aspect-ratio: 4 / 3;
+		height: auto;
+	}
+}
+
+.olech-dlaczego-my__obraz-holder {
+	height: 100%;
 }
 
 .olech-dlaczego-my__obraz {
 	margin: 0;
 	position: relative;
+	height: 100%;
+	min-height: 22rem;
 	border-radius: 0.25em;
 	overflow: hidden;
-	aspect-ratio: 4 / 3;
 	border: 1px solid var(--wp--preset--color--obwodka);
-	box-shadow: 0 16px 36px rgba(20, 17, 13, 0.14);
+	box-shadow: 0 20px 44px rgba(20, 17, 13, 0.16);
 }
 
 .olech-dlaczego-my__obraz img {
@@ -588,6 +664,16 @@ body.home.olech-scrolled .olech-header {
 	height: 100%;
 	object-fit: cover;
 	display: block;
+	/* Powolny, ciągły "oddech" zamiast zoomu na hover (ten drugi jest już
+	   podpisem stylu sekcji Usługi — celowo inny, ambientowy efekt tutaj,
+	   żeby sekcje się nie powtarzały). */
+	animation: olech-kenburns 32s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.olech-dlaczego-my__obraz img {
+		animation: none;
+	}
 }
 
 .olech-dlaczego-my__obraz figcaption {
@@ -600,24 +686,91 @@ body.home.olech-scrolled .olech-header {
 	font-size: var(--wp--preset--font-size--small);
 }
 
+.olech-dlaczego-my__tresc {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
 .olech-dlaczego-my__tresc h2 {
 	text-align: start;
 }
 
+/* Lista punktów zamiast siatki 2×2 kart — bez tła/ramek, czysta,
+   "specyfikacyjna" elegancja: ikona + tekst w rzędzie, cienka linia
+   oddzielająca kolejne punkty. Mniej "boksów" niż poprzednia wersja,
+   więcej oddechu; naturalnie rośnie do wysokości zdjęcia obok. */
 .olech-dlaczego-my__siatka {
-	gap: 1.5rem !important;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	justify-content: space-between;
+	gap: 1.5rem;
 }
 
 .olech-dlaczego-my__punkt {
-	padding: 1.5rem;
+	display: flex;
+	align-items: flex-start;
+	gap: 1.25rem;
+	padding-block-start: 1.5rem;
+	border-block-start: 1px solid var(--wp--preset--color--obwodka);
+}
+
+.olech-dlaczego-my__punkt:first-child {
+	padding-block-start: 0;
+	border-block-start: none;
+}
+
+.olech-dlaczego-my__ikona {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.75rem;
+	height: 2.75rem;
+	padding: 0.6rem;
+	border-radius: 50%;
 	background: var(--wp--preset--color--kremowy);
-	border-inline-start: 3px solid var(--wp--preset--color--zloto);
-	border-radius: 0.2em;
+	border: 1px solid var(--wp--preset--color--obwodka);
+	color: var(--wp--preset--color--zloto);
+	/* Tylko transform (nie `gap`!) — animowanie `gap` na flexboksie ma
+	   niepewne wsparcie w przeglądarkach i zamiast płynnie, potrafi
+	   "skoczyć" na koniec od razu, jakby tekst się przestawiał od nowa
+	   (zgłoszone przez użytkownika). transform nie rusza layoutu w ogóle,
+	   więc tekst obok stoi w miejscu. */
+	transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.olech-dlaczego-my__ikona svg {
+	width: 100%;
+	height: 100%;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.olech-dlaczego-my__punkt:hover .olech-dlaczego-my__ikona {
+	transform: translateX(-4px) scale(1.06);
+	background: var(--wp--preset--color--zloto);
+	color: var(--wp--preset--color--bialy);
+	box-shadow: 0 8px 18px rgba(185, 135, 28, 0.35);
+}
+
+.olech-dlaczego-my__tekst {
+	display: block;
+	padding-block-start: 0.15rem;
 }
 
 .olech-dlaczego-my__punkt h3 {
 	font-size: var(--wp--preset--font-size--large);
-	margin-bottom: 0.5rem;
+	margin-bottom: 0.35rem;
+	transition: color 0.3s ease;
+}
+
+.olech-dlaczego-my__punkt:hover h3 {
+	color: var(--wp--preset--color--zloto);
 }
 
 .olech-dlaczego-my__punkt p {
@@ -682,8 +835,8 @@ body.home.olech-scrolled .olech-header {
 
 .olech-jak-dzialamy-skrot {
 	display: grid;
-	grid-template-columns: 1fr minmax(260px, 380px);
-	gap: clamp(2rem, 5vw, 3.5rem);
+	grid-template-columns: 1fr minmax(300px, 420px);
+	gap: clamp(2.5rem, 6vw, 4.5rem);
 	align-items: center;
 }
 
@@ -707,34 +860,96 @@ body.home.olech-scrolled .olech-header {
 	margin-block-end: 1.75rem;
 }
 
+/* Kroki jako pionowa "oś czasu": kółka ze stałą szerokością kolumny
+   (żeby dało się precyzyjnie poprowadzić łączącą je linię) + linia
+   ::before na <ol>, która "rysuje się" (scaleY 0→1) w rytm tego samego
+   mechanizmu .olech-reveal co reszta strony. */
+
 .olech-jak-dzialamy-skrot__kroki {
+	position: relative;
 	display: grid;
-	gap: 1.25rem;
+	gap: 1.5rem;
 	list-style: none;
 	margin: 0;
 	padding: 0;
 	counter-reset: olech-krok;
 }
 
+.olech-jak-dzialamy-skrot__kroki::before {
+	content: "";
+	position: absolute;
+	left: 1.25rem;
+	top: 1.25rem;
+	bottom: 1.25rem;
+	width: 2px;
+	background: var(--wp--preset--color--obwodka);
+	transform: scaleY(0);
+	transform-origin: top;
+	transition: transform 1.1s ease 0.2s;
+}
+
+.js-reveal .olech-reveal.is-visible .olech-jak-dzialamy-skrot__kroki::before {
+	transform: scaleY(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.olech-jak-dzialamy-skrot__kroki::before {
+		transform: scaleY(1);
+		transition: none;
+	}
+}
+
 .olech-jak-dzialamy-skrot__kroki li {
+	position: relative;
+	z-index: 1;
 	display: grid;
-	grid-template-columns: auto 1fr;
-	gap: 1rem;
-	align-items: baseline;
+	grid-template-columns: 2.5rem 1fr;
+	gap: 1.1rem;
+	align-items: start;
+	padding: 0.4rem 0.6rem 0.4rem 0;
+	border-radius: 0.25em;
+	transition: background 0.3s ease;
+}
+
+.olech-jak-dzialamy-skrot__kroki li:hover {
+	background: var(--wp--preset--color--kremowy);
 }
 
 .olech-jak-dzialamy-skrot__kroki li::before {
 	counter-increment: olech-krok;
 	content: counter(olech-krok);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.5rem;
+	height: 2.5rem;
+	border-radius: 50%;
+	background: var(--wp--preset--color--bialy);
+	border: 2px solid var(--wp--preset--color--zloto);
 	font-family: var(--wp--preset--font-family--playfair-display);
 	font-weight: 700;
-	font-size: var(--wp--preset--font-size--large);
+	font-size: var(--wp--preset--font-size--medium);
 	color: var(--wp--preset--color--zloto);
 	line-height: 1;
+	/* Playfair Display ma niesymetryczne metryki linii (spory zapas nad
+	   cyfrą) — czysty flex align-items:center centruje "linebox", nie
+	   samą cyfrę. Wcześniejsze próby (-1, -3, -5px) zgadywały na oko;
+	   -4px to wynik faktycznego pomiaru w przeglądarce (zrzut ekranu +
+	   analiza pikseli: czarny piksel rdzenia cyfry vs geometryczny środek
+	   koła, sesja 2026-08-16). */
+	transform: translateY(-4px);
+	transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.olech-jak-dzialamy-skrot__kroki li:hover::before {
+	background: var(--wp--preset--color--zloto);
+	color: var(--wp--preset--color--bialy);
+	transform: translateY(-4px) scale(1.08);
 }
 
 .olech-jak-dzialamy-skrot__krok-tresc {
 	display: block;
+	padding-block-start: 0.25rem;
 }
 
 .olech-jak-dzialamy-skrot__kroki p {
@@ -753,7 +968,7 @@ body.home.olech-scrolled .olech-header {
 	border-radius: 0.25em;
 	overflow: hidden;
 	aspect-ratio: 4 / 5;
-	box-shadow: 0 16px 36px rgba(20, 17, 13, 0.14);
+	box-shadow: 0 20px 44px rgba(20, 17, 13, 0.16);
 }
 
 .olech-jak-dzialamy-skrot__obraz img {
@@ -761,6 +976,13 @@ body.home.olech-scrolled .olech-header {
 	height: 100%;
 	object-fit: cover;
 	display: block;
+	animation: olech-kenburns 34s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.olech-jak-dzialamy-skrot__obraz img {
+		animation: none;
+	}
 }
 
 /* ---------- Sekcja wyróżniona (np. wariograf) ---------- */
@@ -1003,4 +1225,3 @@ body.home.olech-scrolled .olech-header {
 		padding-block-end: 3.25rem;
 	}
 }
-

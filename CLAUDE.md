@@ -475,6 +475,17 @@ Nadal brakuje:
 | Zdjęcia | Daniel Olech, sprzęt, miejsce badania (do czasu realnych — stockowe, za zgodą klienta) |
 | Dostępy | Rejestrator domeny, hosting, GBP, GSC |
 
+**Uwaga (2026-08-16)**: powyższy wiersz „Dostępy" dotyczy DOCELOWEGO
+hostingu pod `olechpartners.pl` (sekcja 13) — to nadal brakuje. Osobno,
+tylko na potrzeby podglądu dla klienta, użytkownik postawił kopię strony
+na home.pl (FTP `serwer2492381.home.pl`, katalog
+`/public_html/autoinstalator/wordpressplugins/`, **nie korzeń domeny**).
+Dostęp FTP do tej tymczasowej instalacji był użyty do zdiagnozowania i
+naprawienia na żywo błędów wynikających właśnie z tego, że instalacja
+stoi w podkatalogu (linki menu i ścieżki obrazów renderowane względem
+korzenia domeny — patrz STAN-PROJEKTU.md, sesja 2026-08-16, commit
+`f4e2d99`). Traktować jako tymczasowy hosting podglądowy, nie docelowy.
+
 ---
 
 ## 18. Czego nie robimy

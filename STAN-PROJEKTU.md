@@ -919,6 +919,100 @@ stronie głównej + kontakcie, zero błędów PHP, zero nowych `{{LOREM}}`,
 `check-internal-links.py` bez regresji, sprawdzone na 1920px (menu na
 pełną szerokość) i mobile (390–500px).
 
+## Podgląd dla klienta na home.pl + naprawa błędów podkatalogu (2026-08-16, ta sama sesja, commit `f4e2d99`)
+
+Użytkownik chciał wysłać klientowi podgląd strony. Ngrok odpadł (link
+umiera po wyłączeniu komputera). Ustalona ścieżka: eksport całej strony
+jedną wtyczką (All-in-One WP Migration, darmowa) → import na gotowym,
+darmowym hostingu WordPress.
+
+- **InstaWP odpadło** — sprawdzone live przez WebFetch cennika: wymaga
+  karty kredytowej nawet do darmowych kredytów. Pivot na TasteWP.
+- **Eksport 72–73 MB > limit importu TasteWP (60 MB)** — zmierzone
+  `du -sh` per katalog wtyczki/motywu: ACF Pro 29 MB, Rank Math 15 MB,
+  redis-cache 3,9 MB, nieużywany domyślny motyw twentytwentyfive 8,9 MB.
+  Obejście: wykluczenie tych z Advanced Options eksportu AI1WM (i tak
+  odtwarzalne świeżą instalacją wtyczki + danymi z bazy).
+- **Favicon** wygenerowany z loga (przycięty fragment korona + monogram
+  „CP"), ustawiony przez natywny mechanizm WP Site Icon.
+- Docelowo użytkownik wdrożył **nieprzefiltrowaną wersję (73 MB) na
+  home.pl**, nie na TasteWP — przez autoinstalator home.pl, w katalogu
+  `/autoinstalator/wordpressplugins/` (nie w korzeniu domeny — istotne,
+  patrz niżej). Podniósł ręcznie limit `php.ini`, żeby import się zmieścił.
+
+Po wdrożeniu zgłoszone dwa problemy, oba zdiagnozowane i naprawione
+bezpośrednio na żywym serwerze (dostęp FTP od użytkownika):
+
+- **Obrazy (Temida, „Jak działamy") nie ładowały się** — te same,
+  zahardkodowane ścieżki `/wp-content/themes/olech/assets/img/...` w
+  `front-page.html` i `archive-usluga.html` rozwiązywały się względem
+  KORZENIA CAŁEGO SERWERA (gdzie stoi inna strona klienta, `jbminvest.pl`),
+  nie względem katalogu instalacji WordPressa. Naprawa: dwa nowe bloki
+  dynamiczne, `olech/obraz-motywu` (generyczny, do obrazów tła/treści) i
+  `olech/hero-uslugi-archiwum` (hero `/uslugi/`, statyczny odpowiednik
+  `hero-usluga`) — oba rozwiązują URL przez `get_template_directory_uri()`
+  w PHP zamiast surowej ścieżki w statycznym HTML szablonu (szablony
+  blokowe nie wykonują PHP, więc surowej ścieżki nie da się tam naprawić
+  inaczej niż przez blok).
+- **404 po kliknięciu w menu na telefonie (zgłoszone na 2 realnych
+  telefonach, potwierdzone dopiero po analizie na żywym serwerze)** —
+  najpierw błędnie zdiagnozowane jako cache przeglądarki (curl i headless
+  Chrome zwracały 200, bo testowały bezpośrednio poprawny, pełny URL, nie
+  symulowały kliknięcia w menu). Prawdziwa przyczyna, znaleziona po
+  podłączeniu się przez FTP do serwera i porównaniu wyrenderowanego HTML:
+  blok rdzenia WP `core/navigation` ZAWSZE renderuje linki wewnętrzne
+  względem KORZENIA DOMENY (`href="/kontakt/"`), niezależnie od tego, w
+  jakim katalogu faktycznie stoi WordPress — to zachowanie samego WP, nie
+  bug tego motywu. Niewidoczne lokalnie, bo DDEV stoi w korzeniu swojej
+  domeny (`olech.ddev.site/`). Na home.pl, gdzie WordPress stoi w
+  `/autoinstalator/wordpressplugins/`, link `/kontakt/` z menu ląduje w
+  korzeniu CAŁEGO serwera — 404 przy każdym tapnięciu w menu, mimo że
+  bezpośredni URL działał. Naprawa: filtr `render_block` w `functions.php`
+  dokleja prefiks rzeczywistej ścieżki instalacji (`wp_parse_url(home_url(), PHP_URL_PATH)`)
+  do każdego `href="/..."`, tylko gdy ta ścieżka nie jest pusta (pusta =
+  instalacja w korzeniu domeny = filtr nic nie robi, więc no-op lokalnie
+  i na docelowej domenie po migracji, sekcja 13 CLAUDE.md). Ten sam problem
+  dotyczył też jednego zahardkodowanego linku w `front-page.html` (przycisk
+  „Dowiedz się więcej" pod wariografem), naprawionego tym samym filtrem —
+  stąd `render_block` (każdy blok), nie tylko filtr specyficzny dla
+  nawigacji.
+  **Pułapka po drodze**: `render_block` wywołuje się dla każdego poziomu
+  zagnieżdżenia bloków, więc pierwsza wersja filtra doklejała prefiks
+  wielokrotnie (raz na poziom zagnieżdżenia) — poprawione przez ujemny
+  lookahead w regexie wykluczający już-doklejony prefiks (idempotentne).
+  **Zweryfikowane bezpośrednio na produkcji**: wgrany sam plik
+  `functions.php` przez FTP (bez pełnego re-eksportu/re-importu), curl
+  potwierdził poprawne linki i HTTP 200 pod `/kontakt/`, `/poradnik/`,
+  `/uslugi/`, `/uslugi/badanie-wariografem/` z menu.
+- **„Strona tragicznie nieresponsywna na telefonie"** — zbadane realnym
+  headless Chrome na 390×844, wizualnie wyglądało na ucięty tekst przy
+  prawej krawędzi na `/uslugi/`, potwierdzone (pozornie) zarówno na
+  home.pl jak i lokalnie. Głębsza diagnoza (wstrzyknięty tymczasowy skrypt
+  mierzący `getBoundingClientRect()` wszystkich elementów, usunięty przed
+  commitem) wykazała **zero elementów wystających poza viewport** — czyli
+  strony NIE łamie realny overflow przy dostępnej do zmierzenia szerokości.
+  Ustalone: `chrome.exe --headless=new --screenshot` na tej maszynie
+  ignoruje `--window-size` (przez skalowanie DPI Windows) i zawsze
+  renderuje przy internal viewport ~500px, ale eksportuje PNG węższy niż
+  faktyczny layout — stąd identyczny, złudny „ucięty" wygląd zarówno na
+  home.pl jak i lokalnie (ten sam wadliwy sposób robienia zrzutu, nie
+  współdzielony bug strony). Mimo to przy okazji znaleziona i naprawiona
+  realna luka: wcześniejsza reguła `overflow-wrap: break-word` (sesja
+  redesignu podstron usług, wyżej) wymieniała klasy pojedynczo
+  (`.wp-block-heading`, `.olech-hero__eyebrow`, `.olech-trust-bar`) i nie
+  obejmowała surowych `<h1>/<p>` w `hero-usluga`/`hero-uslugi-archiwum`
+  (`.olech-usluga-hero__tytul/__lead` — nie blok Heading, więc bez klasy
+  `wp-block-heading`). Reguła rozszerzona na wszystkie `h1–h6, p` globalnie,
+  żeby ten wzorzec błędu (nowe niestandardowe klasy nagłówków bez
+  zawijania) nie wracał przy każdym nowym bloku hero.
+
+Przy okazji sprawdzone przez REST API (`/wp-json/wp/v2/pages`,
+`/wp-json/wp/v2/usluga`) i `wp post list` lokalnie: `/o-firmie/`,
+`/cennik/`, `/daniel-olech/`, `/obszar-dzialania/`, `/polityka-prywatnosci/`
+nie istnieją jako strony ani lokalnie, ani na home.pl — to nie regresja
+migracji, po prostu te szablony/treści nie były jeszcze tworzone (zgodne
+z sekcją 16 CLAUDE.md — poza zakresem dotychczasowych punktów).
+
 ## Pominięte w tej sesji — punkty 10 i 12 (zablokowane)
 
 - **Punkt 10 — mapa 301 z baseline + test przekierowań**: wymaga

@@ -449,6 +449,13 @@ stronie, nie `{{LOREM}}`:
   konkurencji jako listy *tematów*, odpowiedzi piszemy własne (sekcja 2.1
   już to dopuszczała).
 
+**Otrzymane 2026-08-16** (podane wprost w sesji roboczej, nie z pliku
+klienta) — już w użyciu, nie `{{LOREM}}`:
+- Telefon kontaktowy: **+48 695 575 715** — ustawiony w Ustawienia →
+  Dane firmy (`olech_ustawienia_firmy('telefon')`). Zasila: sticky CTA
+  mobilne, schema `LocalBusiness.telephone`, blok `olech/cta-telefon`
+  (nagłówek, hero, sekcje CTA).
+
 Nadal brakuje:
 
 | Obszar | Czego brakuje |

@@ -1,6 +1,6 @@
 # Stan projektu — Olech & Partners
 
-Ostatnia aktualizacja: 2026-08-14. Ten plik to migawka stanu prac, nie
+Ostatnia aktualizacja: 2026-08-16. Ten plik to migawka stanu prac, nie
 dokumentacja — jeśli coś się rozjedzie z kodem, kod ma rację. Referencja
 nadrzędna to zawsze `CLAUDE.md`.
 
@@ -16,8 +16,18 @@ nadrzędna to zawsze `CLAUDE.md`.
   `ccef682`, `a585196`, `f907a77`, `bc452dc`, `cb7dfaf`, `ee083e7`,
   `9415c07`, `cf65c9c`. Sesja brandingu/redesignu (poza numeracją sekcji
   16, patrz niżej): `013c77d` (dane od klienta, cena wariografu,
-  windykacja), `c6b88b2` (branding, redesign, obrazy). Punkty 10 i 12
-  pominięte — zablokowane na braku dostępów, patrz niżej.
+  windykacja), `c6b88b2` (branding, redesign, obrazy), `eb7703b`
+  (2026-08-16 — poprawki po przeglądzie: animacje scrollowania, układ
+  usług, CTA telefon, patrz sekcja niżej). Punkty 10 i 12 pominięte —
+  zablokowane na braku dostępów, patrz niżej.
+- **`wp-config.php` jest w `.gitignore` (świadomie, dane środowiskowe) —
+  po KAŻDYM `ddev start`/regeneracji tego pliku trzeba ręcznie dopisać
+  `WP_REDIS_HOST`/`WP_REDIS_PORT`** (patrz punkt niżej o Redis), inaczej
+  strona rzuca „Error establishing a Redis connection". Zaobserwowane
+  ponownie w sesji 2026-08-16 (plik wygenerował się na nowo bez tych
+  stałych) — to nie jednorazowa usterka, tylko stały efekt uboczny trzymania
+  `wp-config.php` poza gitem. Sprawdzać tym w pierwszej kolejności, jeśli
+  strona nie startuje.
 - **Foldery `/logo/` i `/od klienta/` są w `.gitignore`, świadomie.**
   Zawierają surowe materiały źródłowe (logo klienta, notatka z danymi
   firmowymi) — dane z nich są już wyekstrahowane do `CLAUDE.md` (sekcja 17)
@@ -616,6 +626,130 @@ numeru URL się nie zmieniał mimo edycji treści pliku na serwerze).
 `style.css` w kolejnych sesjach — podbijać `Version` w nagłówku pliku,
 inaczej przeglądarka użytkownika może nie zobaczyć zmian mimo poprawnego
 kodu po stronie serwera.
+
+## Sesja poprawek po przeglądzie użytkownika (2026-08-16, commit `eb7703b`)
+
+Kontynuacja sesji brandingu z 2026-08-14 (nadal poza numeracją sekcji 16)
+— użytkownik obejrzał redesign na żywo i dał konkretną listę poprawek.
+Zaczęło się od naprawy lokalnego środowiska (Redis, patrz sekcja
+„Środowisko" wyżej), potem właściwa runda poprawek wizualnych.
+
+**Nowe zdjęcia stockowe** (Openverse, CC BY/CC BY-SA, atrybucja w
+`assets/img/CREDITS.txt`), dobrane pod czarno-złotą paletę:
+`lady-justice.webp` (rzeźba Temidy — sekcja „Dlaczego warto nam
+zaufać"), `korytarz-swiatlo.webp` (sylwetka idąca w stronę światła —
+pasmo „Jeden telefon", zastąpiło pierwszą wersję `cien-dochodzenie.jpg`
+po uwagach użytkownika), `sylwetka-teczka.webp` (sekcja „Jak działamy").
+
+**Animacje wjazdu przy scrollu** — nowy, generyczny mechanizm:
+`.olech-reveal` (klasa) + `assets/js/scroll-reveal.js`
+(IntersectionObserver, jednorazowo per element, `--olech-opoznienie` do
+stopniowania) + `.js-reveal` na `<html>` (dokładane inline w
+`wp_head`, `functions.php`) — dzięki temu CSS chowający `.olech-reveal`
+przed animacją nigdy nie ukrywa treści użytkownikom bez JS. Rozszerzone
+na niemal każdą sekcję i podsekcję strony głównej: pasek zaufania, obraz
++ każdy z 4 punktów „Dlaczego warto" osobno, pasmo „Jeden telefon",
+nagłówek + każdy wiersz „Usługi" osobno, „Jak działamy" + każdy z 4
+kroków osobno, linia pulsu i tekst wariografu, formularz. Wszystko
+respektuje `prefers-reduced-motion`.
+
+**Pasmo „Jeden telefon"** — Ken Burns zamieniony na efekt paralaksy:
+`assets/js/parallax.js` (osobny plik, tylko front-page) ustawia zmienną
+CSS `--olech-parallax` na podstawie pozycji scrolla (rAF-throttled,
+zakres ±40px, wyłączony przy `prefers-reduced-motion`), CSS
+(`.olech-cien::before { transform: translateY(var(--olech-parallax)) }`)
+robi resztę. Dodany przycisk telefonu obok „Zostaw zgłoszenie".
+
+**Usługi — przebudowa z siatki kafli na układ naprzemienny**
+(`blocks/uslugi-karty/render.php` + CSS w `style.css`): zamiast kafli w
+siatce (feedback: „usługi się mega rozjechały"), teraz edytorski układ
+wiersz-po-wierszu — zdjęcie|opis, potem opis|zdjęcie, na przemian.
+Odwrócenie kolumn na wierszach parzystych przez `direction: rtl` na
+wierszu + `direction: ltr` na dzieciach (czysto wizualne — kolejność w
+DOM, więc i dla czytników ekranu, zawsze: zdjęcie, potem tekst). Cały
+wiersz to jeden link. Pierwsza usługa (wariograf) ma etykietę „Usługa
+flagowa" i rosnącą przy hover złotą kreskę pod tytułem zamiast
+specjalnego rozmiaru kafla z poprzedniej wersji.
+
+**Sekcja wariografu**: usunięty motyw „linia-gwiazda-linia"
+(`.olech-divider`, ozdobnik znad sekcji — użytkownik: „usuń", ale
+„motyw linii wariograficznej [pulsu] zostaw"), dodany dłuższy,
+konkretny opis (czas badania 2–4h, stowarzyszenia, do czego służy
+wynik — bez nowych faktów, tylko rozwinięcie już potwierdzonych z
+sekcji 17 CLAUDE.md), drugi przycisk (telefon) obok „Dowiedz się więcej".
+
+**Nowy reużywalny blok `blocks/cta-telefon/`** — jedno źródło prawdy dla
+numeru telefonu (`olech_ustawienia_firmy('telefon')`), bo statyczne
+szablony HTML (`templates/*.html`, `parts/*.html`) nie mogą wywoływać
+PHP wprost. Warianty wizualne (`styl`: zloto/obrys/tekst), renderuje
+pusty ciąg jeśli telefon nie jest ustawiony (nigdy `{{LOREM}}` — to nie
+brakujący fakt, tylko nieuzupełnione ustawienie). Użyty w: nagłówku
+(`parts/header.html`, wariant „tekst"), hero, paśmie „Jeden telefon",
+sekcji wariografu.
+- **Numer telefonu `+48 695 575 715` podany przez użytkownika wprost w
+  tej sesji** (nie z pliku „o firmie.txt") — ustawiony w Ustawienia →
+  Dane firmy (`olech_ustawienia_firmy('telefon')`). Automatycznie
+  odblokował już istniejący, dotąd pusty sticky CTA mobilny
+  (`blocks/cta-sticky/`, checklist pkt 9) i pole `telephone` w schema
+  `LocalBusiness` (`inc/schema.php`) — obie te ścieżki już czytały to
+  ustawienie, po prostu nie miały z czego czytać.
+
+**Dwa realne, wcześniej niewykryte bugi** — znalezione dzięki nowej w
+tej sesji możliwości robienia zrzutów ekranu (patrz niżej), nie samym
+czytaniem kodu:
+1. **Biały pasek nad hero wrócił** mimo wcześniejszej naprawy z sesji
+   2026-08-14. Głębsza przyczyna: `.wp-site-blocks > * { margin-block-start:
+   24px }` (rdzeń WP) — nagłówek strony głównej jest `position:fixed`
+   i wizualnie zajmuje 0px, ale w DOM-ie nadal JEST pierwszym dzieckiem
+   `.wp-site-blocks`, więc `<main>`, jako DRUGIE dziecko, i tak dostawał
+   24px odstępu od góry. Poprzednia naprawa zerowała tylko
+   `.olech-hero`/`.olech-band` (child-level), nie `<main>` samo. Naprawa:
+   `main.wp-block-group { margin-block-start: 0 !important; }`.
+2. **Brak globalnego `padding-inline` na sekcjach pełnej szerokości** —
+   `theme.json` nigdy nie definiował `styles.spacing.padding`, więc
+   mechanizm WP `has-global-padding` nie miał żadnej wartości do
+   wstawienia. Inne sekcje tego nie ujawniały (własny padding na
+   kartach), ale hero i pasek zaufania — nie, więc tekst mógł dotykać
+   krawędzi ekranu na wąskich telefonach. Naprawa dwutorowa: (a)
+   `theme.json` → `styles.spacing.padding` (`clamp(1.25rem, 4vw, 3rem)`,
+   ogólna poprawa sitewide — WP i tak neguje to na bezpośrednich
+   dzieciach typu `alignfull`, więc to nie wystarcza samo w sobie), (b)
+   jawny `padding-inline` wprost na `.olech-hero`, `.olech-band`,
+   `.olech-trust-bar` (ten sam wzorzec co już wcześniej istniejący
+   `.olech-header`/`.olech-cien__tresc`) — bo `alignfull` z definicji
+   dostaje zerowy padding od WP niezależnie od (a). Przy okazji: fluid
+   font-size `xx-large` (nagłówek H1 hero) miał za duże minimum
+   (2.25rem) jak na najwęższe telefony — obniżone do 1.875rem, plus
+   defensywny `overflow-wrap: break-word` na nagłówkach.
+
+**Nowe narzędzie odkryte w tej sesji — realne zrzuty ekranu z headless
+Chrome przez Windows (WSL interop)**: `/mnt/c/Program Files/Google/Chrome/
+Application/chrome.exe --headless=new --disable-gpu --no-sandbox
+--window-size=SZER,WYS --ignore-certificate-errors
+--virtual-time-budget=MS --screenshot="C:\ścieżka\out.png" URL` —
+zapisuje do ścieżki na Windows (np.
+`/mnt/c/Users/<user>/AppData/Local/Temp/...`), stamtąd `Read` w Claude
+Code może go odczytać jako obraz. Wcześniejsze sesje (punkt 3, 9) nie
+miały takiej możliwości i weryfikowały tylko strukturalnie. **Uwaga
+znaleziona przy tej okazji**: `--window-size` w tym środowisku NIE
+odpowiada 1:1 szerokości viewportu w CSS-owych pikselach (obserwowane
+390 → faktyczne `window.innerWidth` 500, prawdopodobnie skalowanie
+DPI Windows) — do precyzyjnej weryfikacji wąskich breakpointów lepiej
+zmierzyć realny `window.innerWidth`/`scrollWidth` (np. przez tymczasowy
+`wp_footer` z `document.body.scrollWidth` wypisanym na stronę), nie
+ufać dosłownie podanej wartości `--window-size`. Dla bardzo wysokich
+stron (`--window-size` z dużym Y, żeby złapać całą stronę na raz)
+obrazy `loading="lazy"` mogą nie zdążyć się załadować przy krótkim
+`--virtual-time-budget` (widoczne jako czarne/puste prostokąty) — to
+ograniczenie samego narzędzia (realna sieć/serwer nie nadążają przy
+sztucznie ogromnym viewporcie), nie bug strony; dłuższy budżet
+(15–20s) albo bezpośrednie sprawdzenie kodu HTTP obrazka rozstrzyga
+wątpliwość szybciej.
+
+Zweryfikowane end-to-end: HTTP 200 na stronie głównej, `/uslugi/`,
+pojedynczych usługach, `/kontakt/`, zero błędów PHP w logach, zero
+nowych `{{LOREM}}`, `check-internal-links.py` bez regresji. Scommitowane
+i wypchnięte na `origin/main` (`eb7703b`).
 
 ## Pominięte w tej sesji — punkty 10 i 12 (zablokowane)
 
